@@ -416,8 +416,21 @@ async function backupUserData(handle, callback) {
  */
 async function changePassword(handle, callback) {
     try {
+        await getCurrentUser();
         const template = $(await renderTemplateAsync('changePassword'));
-        template.find('.currentPasswordBlock').toggle(!isAdmin());
+
+        // 如果是管理员，或者用户没有密码（OAuth 用户首次设置），隐藏当前密码输入框
+        const hasPassword = currentUser && currentUser.password;
+        const needOldPassword = !isAdmin() && hasPassword;
+        template.find('.currentPasswordBlock').toggle(needOldPassword);
+
+        // 如果是 OAuth 用户首次设置密码，显示提示信息
+        if (!hasPassword && currentUser.oauthProvider) {
+            const hint = $('<div class="oauth-password-hint" style="margin-bottom: 10px; padding: 10px; background: #e8f4f8; border-radius: 5px; font-size: 0.9em;">');
+            hint.html(`<i class="fa-solid fa-info-circle"></i> 您通过 <strong>${currentUser.oauthProvider}</strong> 注册，当前没有密码。设置密码后，您可以使用用户名密码登录或继续使用 ${currentUser.oauthProvider} 登录。`);
+            template.prepend(hint);
+        }
+
         let newPassword = '';
         let confirmPassword = '';
         let oldPassword = '';
@@ -452,7 +465,11 @@ async function changePassword(handle, callback) {
             throw new Error('Failed to change password');
         }
 
-        toastr.success('Password changed successfully', 'Password Changed');
+        if (!hasPassword) {
+            toastr.success('密码设置成功！现在您可以使用用户名密码登录了', 'Password Set');
+        } else {
+            toastr.success('Password changed successfully', 'Password Changed');
+        }
         callback();
     }
     catch (error) {
@@ -978,6 +995,20 @@ async function openUserProfile() {
     template.find('.userCreated').text(new Date(currentUser.created).toLocaleString());
     template.find('.hasPassword').toggle(currentUser.password);
     template.find('.noPassword').toggle(!currentUser.password);
+
+    // 显示 OAuth 提供商信息
+    if (currentUser.oauthProvider) {
+        const providerNames = {
+            'github': 'GitHub',
+            'discord': 'Discord',
+            'linuxdo': 'Linux.do'
+        };
+        const providerName = providerNames[currentUser.oauthProvider] || currentUser.oauthProvider;
+        template.find('.oauthProviderBlock').show();
+        template.find('.oauthProvider').text(providerName);
+    } else {
+        template.find('.oauthProviderBlock').hide();
+    }
 
     // 显示邮箱信息（如果没有绑定则显示为空）
     const userEmail = currentUser.email || '';

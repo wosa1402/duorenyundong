@@ -128,18 +128,28 @@ router.post('/change-password', async (request, response) => {
             return response.status(403).json({ error: 'User is disabled' });
         }
 
-        if (!request.user.profile.admin && user.password && user.password !== getPasswordHash(request.body.oldPassword, user.salt)) {
-            console.error('Change password failed: Incorrect password');
-            return response.status(403).json({ error: 'Incorrect password' });
+        // 检查旧密码（如果用户已有密码）
+        // OAuth 用户首次设置密码时不需要验证旧密码
+        if (!request.user.profile.admin && user.password && user.salt) {
+            // 用户已有密码，需要验证旧密码
+            if (!request.body.oldPassword || user.password !== getPasswordHash(request.body.oldPassword, user.salt)) {
+                console.error('Change password failed: Incorrect old password');
+                return response.status(403).json({ error: '旧密码错误' });
+            }
+        } else if (!user.password && !user.salt) {
+            // OAuth 用户首次设置密码，记录日志
+            console.info(`OAuth user ${normalizedHandle} is setting password for the first time`);
         }
 
         if (request.body.newPassword) {
             const salt = getPasswordSalt();
             user.password = getPasswordHash(request.body.newPassword, salt);
             user.salt = salt;
+            console.info(`Password updated for user: ${normalizedHandle}`);
         } else {
             user.password = '';
             user.salt = '';
+            console.info(`Password removed for user: ${normalizedHandle}`);
         }
 
         await storage.setItem(toKey(normalizedHandle), user);

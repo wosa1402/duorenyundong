@@ -883,9 +883,9 @@ async function basicUserLogin(request) {
         if (username === userHandle) {
             const user = await storage.getItem(toKey(userHandle));
 
-            // 禁止OAuth用户通过Basic Auth登录
-            if (user && user.oauthProvider) {
-                console.warn('Basic Auth login failed: OAuth user', userHandle, 'cannot login with password');
+            // 禁止未设置密码的OAuth用户通过Basic Auth登录
+            if (user && user.oauthProvider && !user.password && !user.salt) {
+                console.warn('Basic Auth login failed: OAuth user', userHandle, 'has no password set');
                 return false;
             }
 

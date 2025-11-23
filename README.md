@@ -2,6 +2,21 @@
 
 基于SillyTavern 1.13.5的增强版本，集成了用户管理、系统监控、论坛社区、公告管理等企业级功能。
 
+## 🆕 最新更新（V1.13.12）
+
+### OAuth 第三方登录优化
+- ✅ **修复 Linux.do 用户名获取问题**：成功获取真实用户名（如 `ZhaiKer`），不再使用默认格式
+- ✅ **自动头像同步**：首次登录自动下载并设置第三方账号头像，每次登录自动更新
+- ✅ **灵活的登录方式**：
+  - OAuth 用户（未设置密码）：只能通过第三方 OAuth 登录
+  - OAuth 用户（已设置密码）：可使用 OAuth 登录或用户名密码登录
+- ✅ **智能密码设置**：OAuth 用户首次设置密码时无需输入旧密码，系统自动识别
+- ✅ **友好的用户界面**：
+  - 个人资料显示 OAuth 提供商信息（GitHub / Discord / Linux.do）
+  - 修改密码页面显示 OAuth 用户友好提示
+  - 登录失败时提供清晰的引导信息
+- ✅ **安全验证优化**：智能判断 JWT token 是否包含完整用户信息，自动调用 API 获取用户详情
+
 ## 演示地址
 
 **https://st.zkjd.me**
@@ -38,13 +53,17 @@
 - **存储空间监控**：实时显示每个用户的存储占用情况
 - **用户邮箱信息**：用户面板显示绑定的邮箱地址（V1.13.12 新增）
 - **OAuth第三方注册登录**：支持第三方账号快速注册和登录（V1.13.12 新增）
-  - 支持 GitHub、Discord、Linux.do 三种 OAuth 提供商
-  - 一键登录，无需记住密码
-  - 自动同步第三方账号头像和邮箱信息
-  - 与邀请码系统完美集成：如果启用了邀请码，OAuth 注册时需要输入邀请码
-  - 动态回调 URL：自动适配反向代理和 SSL 配置
-  - OAuth 用户无密码，只能通过第三方账号登录
-  - 安全验证：使用 state 参数防止 CSRF 攻击
+  - **支持的 OAuth 提供商**：GitHub、Discord、Linux.do
+  - **一键登录**：无需记住密码，快速登录
+  - **自动同步信息**：自动同步第三方账号的真实用户名、头像和邮箱
+  - **智能头像管理**：首次登录自动下载并设置第三方账号头像，每次登录自动更新
+  - **灵活的登录方式**（V1.13.12 优化）：
+    - 纯 OAuth 用户（未设置密码）：只能通过第三方 OAuth 登录
+    - OAuth 用户（已设置密码）：可以使用 OAuth 登录或用户名密码登录
+  - **密码设置功能**：OAuth 用户可在个人设置中设置密码，设置后即可使用两种登录方式
+  - **与邀请码系统完美集成**：如果启用了邀请码，OAuth 注册时需要输入邀请码
+  - **动态回调 URL**：自动适配反向代理和 SSL 配置
+  - **安全验证**：使用 state 参数防止 CSRF 攻击
 - **备份文件清理**：管理员可清理用户备份文件释放空间
   - 单个用户备份清理：针对特定用户清理备份文件
   - 批量备份清理：一键清理所有用户的备份文件
@@ -239,7 +258,7 @@ oauth:
     callbackUrl: ''           # 回调URL（留空则自动生成，支持反向代理）
     authUrl: ''               # 授权URL（默认：https://connect.linux.do/oauth2/authorize）
     tokenUrl: ''              # Token URL（默认：https://connect.linux.do/oauth2/token）
-    userInfoUrl: ''           # 用户信息URL（默认：https://connect.linux.do/oauth2/userinfo）
+    userInfoUrl: ''           # 用户信息URL（默认：https://connect.linux.do/api/user）
 
 # 邮件服务配置（V1.13.12 新增）
 email:
@@ -299,23 +318,126 @@ email:
      - 如果系统启用了邮件服务，需要填写邮箱并输入验证码
      - 验证码会发送到您填写的邮箱，5分钟内有效
      - 注册成功后，邮箱会自动绑定到您的账户
-   - **方式二：OAuth第三方登录**（V1.13.12 新增）
+   - **方式二：OAuth第三方登录**（V1.13.12 新增/优化）
      - 点击登录页面的 GitHub、Discord 或 Linux.do 登录按钮
      - 授权后自动跳转回系统
      - 如果启用了邀请码系统，首次登录需要输入邀请码完成注册
-     - OAuth 用户无需设置密码，后续可直接通过第三方账号登录
-     - 系统会自动同步第三方账号的头像和邮箱信息
-2. 登录系统开始使用AI对话功能
-3. 在论坛中参与社区讨论
-4. 分享和下载公共角色卡
-5. 个性化设置和主题配置
-6. 密码找回（V1.13.12 新增）
+     - 系统会自动同步第三方账号的真实用户名、头像和邮箱信息
+     - OAuth 用户默认无密码，可直接通过第三方账号登录
+
+2. OAuth用户设置密码（V1.13.12 新增）
+   - OAuth用户可在**个人设置 → 修改密码**中设置密码
+   - **首次设置密码无需输入旧密码**，系统会显示友好提示
+   - 设置密码后，您可以使用以下**两种方式**登录：
+     - 继续使用第三方 OAuth 登录（推荐）
+     - 使用用户名 + 密码登录
+   - 个人资料页面会显示您的 OAuth 提供商信息
+
+3. 登录方式说明
+   - **OAuth用户（未设置密码）**：只能通过第三方 OAuth 登录
+   - **OAuth用户（已设置密码）**：可使用 OAuth 或密码两种方式登录
+   - **传统注册用户**：使用用户名 + 密码登录
+
+4. 使用系统功能
+   - 登录系统开始使用AI对话功能
+   - 在论坛中参与社区讨论
+   - 分享和下载公共角色卡
+   - 个性化设置和主题配置
+
+5. 密码找回（V1.13.12 新增）
    - 如果已绑定邮箱，恢复码会发送到您的邮箱
    - 如果未绑定邮箱，恢复码会显示在服务器控制台（需联系管理员）
    - 恢复码5分钟内有效
-   - **注意**：OAuth 用户没有密码，无法使用密码找回功能，只能通过第三方账号登录
+   - **注意**：未设置密码的 OAuth 用户无法使用密码找回功能，请使用第三方账号登录
 
 
+
+## 🔐 OAuth 第三方登录技术细节（V1.13.12）
+
+### 实现原理
+
+#### 1. **用户名获取优化**
+- **问题**：Linux.do 返回的 JWT token 只包含认证信息（sub, iss, aud），不包含用户详细信息
+- **解决方案**：
+  1. 解码 access_token JWT，检查是否包含 username 等用户信息
+  2. 如果只有认证信息，自动调用 `/api/user` 端点获取完整用户数据
+  3. 支持多种用户信息字段：`username`, `login`, `preferred_username`, `name`
+  4. 自动处理嵌套数据结构（`user.username` 或 `username`）
+
+#### 2. **头像自动同步**
+- **首次注册**：下载第三方账号头像并转换为 base64 data URL 存储
+- **每次登录**：自动更新头像，确保显示最新头像
+- **支持格式**：JPEG、PNG、GIF、WebP 等常见图片格式
+- **错误处理**：头像下载失败不影响登录流程
+
+#### 3. **灵活的登录方式**
+- **判断逻辑**：
+  ```javascript
+  if (user.oauthProvider && !user.password && !user.salt) {
+    // 纯 OAuth 用户，只能通过第三方登录
+  } else if (user.oauthProvider && user.password && user.salt) {
+    // OAuth 用户已设置密码，可使用两种方式登录
+  }
+  ```
+- **密码设置**：
+  - OAuth 用户首次设置密码时无需验证旧密码
+  - 前端自动隐藏"当前密码"输入框
+  - 显示友好的引导提示信息
+
+#### 4. **安全特性**
+- **State 参数**：防止 CSRF 攻击，每次授权使用随机生成的 state
+- **JWT 验证**：解码并验证 JWT token 的有效性
+- **会话管理**：OAuth 登录后创建安全的用户会话
+- **权限隔离**：OAuth 用户和传统用户使用相同的权限系统
+
+### 支持的 OAuth 提供商
+
+| 提供商 | 用户名字段 | 头像字段 | 邮箱字段 | 特殊说明 |
+|--------|-----------|---------|---------|---------|
+| **GitHub** | `login` | `avatar_url` | `email` | 标准 OAuth2 |
+| **Discord** | `username` | `avatar` | `email` | 需要构建头像URL |
+| **Linux.do** | `username` | `avatar_url` | `email` | 使用 Discourse API |
+
+### 配置示例
+
+```yaml
+oauth:
+  linuxdo:
+    enabled: true
+    clientId: 'your_client_id_here'
+    clientSecret: 'your_client_secret_here'
+    callbackUrl: ''  # 留空自动生成
+    # 以下三个URL可留空使用默认值
+    authUrl: 'https://connect.linux.do/oauth2/authorize'
+    tokenUrl: 'https://connect.linux.do/oauth2/token'
+    userInfoUrl: 'https://connect.linux.do/api/user'  # 使用 Discourse API 端点
+```
+
+### API 端点说明
+
+#### OAuth 认证流程
+1. **GET** `/api/oauth/:provider` - 发起 OAuth 授权
+2. **GET** `/api/oauth/:provider/callback` - OAuth 回调处理
+3. **POST** `/api/oauth/complete-registration` - 完成邀请码验证（如果需要）
+
+#### 第三方平台端点（Linux.do）
+- **授权端点**：`https://connect.linux.do/oauth2/authorize`
+- **Token端点**：`https://connect.linux.do/oauth2/token`
+- **用户信息端点**：`https://connect.linux.do/api/user`（返回完整用户数据）
+
+#### 返回数据格式（Linux.do）
+```json
+{
+  "id": 107981,
+  "username": "ZhaiKer",
+  "name": "Ker Zhai",
+  "email": "user@example.com",
+  "avatar_url": "https://linux.do/user_avatar/linux.do/zhaiker/288/493521_2.png",
+  "active": true,
+  "trust_level": 3,
+  "silenced": false
+}
+```
 
 ## 🛠️ 开发指南
 
@@ -324,24 +446,35 @@ email:
 SillyTavernchat/
 ├── src/                    # 后端源码
 │   ├── endpoints/         # API端点
-│   │   ├── users-*.js    # 用户管理API
+│   │   ├── users-public.js  # 用户公开API（登录、注册、密码找回）
+│   │   ├── users-private.js # 用户私有API（修改密码、头像、个人信息）
+│   │   ├── users-admin.js   # 用户管理API（管理员功能）
 │   │   ├── forum.js      # 论坛API
 │   │   ├── system-load.js # 系统监控API
 │   │   ├── invitation-codes.js # 邀请码API
 │   │   ├── announcements.js # 公告管理API
-│   │   ├── oauth.js         # OAuth第三方登录API（V1.13.12 新增）
-│   │   ├── email-config.js # 邮件配置API（V1.13.12 新增）
-│   │   └── email-status.js # 邮件服务状态API（V1.13.12 新增）
+│   │   ├── oauth.js         # OAuth第三方登录API（V1.13.12 新增/优化）
+│   │   │                    # - 支持 GitHub、Discord、Linux.do
+│   │   │                    # - 自动头像下载和同步
+│   │   │                    # - JWT token 解析和用户信息获取
+│   │   │                    # - 灵活的密码设置和登录方式
+│   │   ├── oauth-config.js  # OAuth配置管理API（V1.13.12 新增）
+│   │   ├── email-config.js  # 邮件配置API（V1.13.12 新增）
+│   │   └── email-status.js  # 邮件服务状态API（V1.13.12 新增）
 │   ├── middleware/        # 中间件
 │   ├── system-monitor.js  # 系统监控核心
-│   ├── users.js          # 用户管理核心
+│   ├── users.js          # 用户管理核心（优化了OAuth用户认证逻辑）
 │   └── email-service.js   # 邮件服务核心（V1.13.12 新增）
 ├── public/                # 前端资源
-│   ├── login.html        # 登录页面
+│   ├── login.html        # 登录页面（支持OAuth第三方登录按钮）
 │   ├── register.html     # 注册页面
 │   ├── forum.html        # 论坛页面
 │   ├── public-characters.html # 角色卡库
 │   └── scripts/          # JavaScript文件
+│       ├── user.js       # 用户管理前端（优化了密码设置逻辑）
+│       └── templates/    # HTML模板
+│           ├── userProfile.html  # 个人资料（显示OAuth提供商）
+│           └── changePassword.html # 修改密码表单
 └── data/                 # 数据存储
     ├── default-user/     # 默认用户数据
     ├── system-monitor/   # 监控数据

@@ -143,11 +143,17 @@ router.post('/login', async (request, response) => {
             });
         }
 
-        // 检查是否为第三方OAuth登录用户
-        if (user.oauthProvider) {
-            console.warn('Login failed: OAuth user', user.handle, 'cannot login with password');
+        // 检查是否为第三方OAuth登录用户（未设置密码的情况）
+        if (user.oauthProvider && !user.password && !user.salt) {
+            const providerNames = {
+                'github': 'GitHub',
+                'discord': 'Discord',
+                'linuxdo': 'Linux.do'
+            };
+            const providerName = providerNames[user.oauthProvider] || user.oauthProvider;
+            console.warn('Login failed: OAuth user', user.handle, 'has no password set, must use OAuth login');
             return response.status(403).json({
-                error: `此账户通过 ${user.oauthProvider} 登录，请使用第三方登录方式`
+                error: `此账户通过 ${providerName} 注册，尚未设置密码。请使用第三方登录，或在个人设置中设置密码后再使用密码登录`
             });
         }
 

@@ -10,7 +10,8 @@ import {
     normalizeHandle,
     KEY_PREFIX,
     getUserDirectories,
-    ensurePublicDirectoriesExist
+    ensurePublicDirectoriesExist,
+    toAvatarKey
 } from '../users.js';
 import {
     validateInvitationCode,
@@ -38,6 +39,45 @@ function processDiscourseAvatarTemplate(template, baseUrl = 'https://connect.lin
     // 处理相对路径，替换 {size} 占位符
     const path = template.replace('{size}', '96');
     return `${baseUrl}${path}`;
+}
+
+/**
+ * 下载远程图片并转换为 data URL
+ * @param {string} imageUrl 图片 URL
+ * @returns {Promise<string|null>} data URL 格式的图片，失败返回 null
+ */
+async function downloadAvatarAsDataUrl(imageUrl) {
+    if (!imageUrl) return null;
+
+    try {
+        console.log(`📥 开始下载头像: ${imageUrl}`);
+        const response = await fetch(imageUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            },
+        });
+
+        if (!response.ok) {
+            console.error(`头像下载失败: ${response.status} ${response.statusText}`);
+            return null;
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.startsWith('image/')) {
+            console.error(`返回的不是图片格式: ${contentType}`);
+            return null;
+        }
+
+        const buffer = await response.arrayBuffer();
+        const base64 = Buffer.from(buffer).toString('base64');
+        const dataUrl = `data:${contentType};base64,${base64}`;
+
+        console.log(`✅ 头像下载成功，大小: ${(buffer.byteLength / 1024).toFixed(2)} KB`);
+        return dataUrl;
+    } catch (error) {
+        console.error(`下载头像时出错:`, error.message);
+        return null;
+    }
 }
 
 /**
@@ -694,6 +734,17 @@ async function handleOAuthLogin(request, response, provider, userData) {
             await storage.setItem(toKey(normalizedHandle), user);
             console.log(`Created new user via ${provider} OAuth:`, normalizedHandle);
 
+            // 下载并保存头像（如果有）
+            if (avatar) {
+                const avatarDataUrl = await downloadAvatarAsDataUrl(avatar);
+                if (avatarDataUrl) {
+                    await storage.setItem(toAvatarKey(normalizedHandle), avatarDataUrl);
+                    console.log(`✅ ${provider} 头像已保存到用户 ${normalizedHandle}`);
+                } else {
+                    console.warn(`⚠ 无法下载 ${provider} 头像`);
+                }
+            }
+
             // 创建用户目录并初始化默认内容
             console.info('Creating data directories for', normalizedHandle);
             await ensurePublicDirectoriesExist();
@@ -710,7 +761,16 @@ async function handleOAuthLogin(request, response, provider, userData) {
             // 更新OAuth信息
             user.oauthProvider = provider;
             user.oauthUserId = userId;
-            if (avatar) user.avatar = avatar;
+            if (avatar) {
+                user.avatar = avatar;
+
+                // 下载并更新头像（每次登录都更新，确保头像是最新的）
+                const avatarDataUrl = await downloadAvatarAsDataUrl(avatar);
+                if (avatarDataUrl) {
+                    await storage.setItem(toAvatarKey(normalizedHandle), avatarDataUrl);
+                    console.log(`✅ ${provider} 头像已更新到用户 ${normalizedHandle}`);
+                }
+            }
             await storage.setItem(toKey(normalizedHandle), user);
         }
 
@@ -778,6 +838,17 @@ router.post('/verify-invitation', async (request, response) => {
 
         await storage.setItem(toKey(pendingUser.handle), user);
         console.log(`Created new user via ${pendingUser.provider} OAuth with invitation code:`, pendingUser.handle);
+
+        // 下载并保存头像（如果有）
+        if (pendingUser.avatar) {
+            const avatarDataUrl = await downloadAvatarAsDataUrl(pendingUser.avatar);
+            if (avatarDataUrl) {
+                await storage.setItem(toAvatarKey(pendingUser.handle), avatarDataUrl);
+                console.log(`✅ ${pendingUser.provider} 头像已保存到用户 ${pendingUser.handle}`);
+            } else {
+                console.warn(`⚠ 无法下载 ${pendingUser.provider} 头像`);
+            }
+        }
 
         // 使用邀请码
         await useInvitationCode(invitationCode, pendingUser.handle, userExpiresAt);
