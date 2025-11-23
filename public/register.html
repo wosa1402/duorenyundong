@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base href="/">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="darkreader-lock">
+    <meta name="robots" content="noindex, nofollow" />
+    <style>
+        /* Put critical CSS here. The rest should go in stylesheets. */
+        body {
+            background-color: rgb(36, 36, 37);
+        }
+
+        /* 彻底防止横向滚动的紧急修复 */
+        html, body {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+            width: 100vw !important;
+            box-sizing: border-box !important;
+        }
+
+        * {
+            max-width: 100vw !important;
+            box-sizing: border-box !important;
+        }
+
+        /* 特殊处理可能导致滚动的元素 */
+        #shadow_popup, #dialogue_popup {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            overflow-x: hidden !important;
+            box-sizing: border-box !important;
+        }
+    </style>
+    <link rel="preload" as="style" href="style.css">
+    <link rel="apple-touch-icon" sizes="57x57" href="img/apple-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="img/apple-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="img/apple-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="img/apple-icon-144x144.png" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="css/st-tailwind.css">
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+    <link rel="stylesheet" type="text/css" href="css/register.css">
+    <link rel="manifest" crossorigin="use-credentials" href="manifest.json">
+    <link href="webfonts/NotoSans/stylesheet.css" rel="stylesheet">
+    <link href="webfonts/NotoSansMono/stylesheet.css" rel="stylesheet">
+    <!-- fontawesome webfonts-->
+    <link href="css/fontawesome.min.css" rel="stylesheet">
+    <link href="css/solid.min.css" rel="stylesheet">
+    <link href="css/user.css" rel="stylesheet">
+    <title>SillyTavern - 用户注册</title>
+</head>
+
+<body class="login register-page">
+    <div id="shadow_popup" style="opacity: 1;">
+        <div id="dialogue_popup">
+            <div id="dialogue_popup_holder">
+                <div id="dialogue_popup_text">
+                    <div id="registerBlock" class="register-container">
+                        <div class="register-card">
+                            <!-- Logo和标题 -->
+                            <div class="register-header">
+                                <div class="register-logo">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#gradient1)"/>
+                                        <path d="M2 17L12 22L22 17V12L12 17L2 12V17Z" fill="url(#gradient2)"/>
+                                        <defs>
+                                            <linearGradient id="gradient1" x1="2" y1="2" x2="22" y2="12">
+                                                <stop offset="0%" stop-color="#667eea"/>
+                                                <stop offset="100%" stop-color="#764ba2"/>
+                                            </linearGradient>
+                                            <linearGradient id="gradient2" x1="2" y1="12" x2="22" y2="22">
+                                                <stop offset="0%" stop-color="#f093fb"/>
+                                                <stop offset="100%" stop-color="#f5576c"/>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <h1 class="register-title">欢迎来到 SillyTavern</h1>
+                                <p class="register-subtitle">创建您的账户，开始AI对话之旅</p>
+                            </div>
+
+                            <form id="registerForm" class="register-form">
+                                <!-- 基本信息 -->
+                                <div class="form-section">
+                                    <div class="form-section-title">
+                                        <i class="fa-solid fa-user"></i>
+                                        <span>基本信息</span>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="displayName" class="form-label">
+                                                <i class="fa-solid fa-id-card"></i>
+                                                显示名称
+                                            </label>
+                                            <input id="displayName" class="form-input" type="text" placeholder="请输入您的显示名称" autocomplete="name" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="userHandle" class="form-label">
+                                                <i class="fa-solid fa-at"></i>
+                                                用户名
+                                            </label>
+                                            <input id="userHandle" class="form-input" type="text" placeholder="支持英文、数字和横杠" autocomplete="username" required>
+                                            <small class="form-hint">例如：john-doe、JohnDoe123（支持大小写英文、数字和横杠，系统会自动规范化为小写）</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 安全设置 -->
+                                <div class="form-section">
+                                    <div class="form-section-title">
+                                        <i class="fa-solid fa-lock"></i>
+                                        <span>安全设置</span>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="userPassword" class="form-label">
+                                                <i class="fa-solid fa-key"></i>
+                                                密码
+                                            </label>
+                                            <input id="userPassword" class="form-input" type="password" placeholder="请输入密码" autocomplete="new-password" required>
+                                            <small class="form-hint">密码长度至少6位</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="confirmPassword" class="form-label">
+                                                <i class="fa-solid fa-shield-halved"></i>
+                                                确认密码
+                                            </label>
+                                            <input id="confirmPassword" class="form-input" type="password" placeholder="请再次输入密码" autocomplete="new-password" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 邮箱验证 -->
+                                <div class="form-section" id="emailSection">
+                                    <div class="form-section-title">
+                                        <i class="fa-solid fa-envelope"></i>
+                                        <span>邮箱验证</span>
+                                    </div>
+
+                                    <div class="form-row" id="emailGroup">
+                                        <div class="form-group">
+                                            <label for="userEmail" class="form-label">
+                                                <i class="fa-solid fa-at"></i>
+                                                电子邮箱
+                                            </label>
+                                            <div class="input-with-button">
+                                                <input id="userEmail" class="form-input" type="email" placeholder="请输入您的邮箱" autocomplete="email" required>
+                                                <button type="button" id="sendVerificationButton" class="btn-send-code">
+                                                    <i class="fa-solid fa-paper-plane"></i>
+                                                    <span>发送验证码</span>
+                                                </button>
+                                            </div>
+                                            <small class="form-hint">注册需要验证邮箱</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row" id="verificationCodeGroup">
+                                        <div class="form-group">
+                                            <label for="verificationCode" class="form-label">
+                                                <i class="fa-solid fa-hashtag"></i>
+                                                邮箱验证码
+                                            </label>
+                                            <input id="verificationCode" class="form-input code-input" type="text" placeholder="请输入6位验证码" autocomplete="off" required maxlength="6">
+                                            <small class="form-hint">验证码已发送至您的邮箱，5分钟内有效</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 邀请码（如果需要） -->
+                                <div class="form-section" id="invitationSection" style="display: none;">
+                                    <div class="form-section-title">
+                                        <i class="fa-solid fa-ticket"></i>
+                                        <span>邀请码</span>
+                                    </div>
+
+                                    <div class="form-row" id="invitationCodeGroup">
+                                        <div class="form-group">
+                                            <label for="invitationCode" class="form-label">
+                                                <i class="fa-solid fa-gift"></i>
+                                                邀请码
+                                            </label>
+                                            <input id="invitationCode" class="form-input" type="text" placeholder="请输入邀请码" autocomplete="off">
+                                            <small class="form-hint">注册需要有效的邀请码</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 操作按钮 -->
+                                <div class="form-actions">
+                                    <button type="submit" id="registerButton" class="btn btn-primary">
+                                        <i class="fa-solid fa-user-plus"></i>
+                                        <span>创建账户</span>
+                                    </button>
+                                    <button type="button" id="backToLoginButton" class="btn btn-secondary">
+                                        <i class="fa-solid fa-arrow-left"></i>
+                                        <span>返回登录</span>
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div id="errorMessage" class="message-box"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="lib/jquery-3.5.1.min.js"></script>
+    <script>
+        // 彻底防止横向滚动的JavaScript解决方案
+        function preventHorizontalScroll() {
+            // 强制设置body样式
+            document.body.style.overflowX = 'hidden';
+            document.body.style.maxWidth = '100vw';
+            document.body.style.width = '100vw';
+            document.body.style.boxSizing = 'border-box';
+
+            // 强制设置html样式
+            document.documentElement.style.overflowX = 'hidden';
+            document.documentElement.style.maxWidth = '100vw';
+            document.documentElement.style.width = '100vw';
+            document.documentElement.style.boxSizing = 'border-box';
+
+            // 检查并修复所有可能导致横向滚动的元素
+            const elements = document.querySelectorAll('*');
+            elements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.width > window.innerWidth) {
+                    el.style.maxWidth = '100vw';
+                    el.style.width = '100%';
+                    el.style.boxSizing = 'border-box';
+                    el.style.overflowX = 'hidden';
+                }
+            });
+
+            // 特别处理弹窗元素
+            const popup = document.getElementById('dialogue_popup');
+            if (popup) {
+                popup.style.width = 'calc(100vw - 40px)';
+                popup.style.maxWidth = 'calc(100vw - 40px)';
+                popup.style.left = '20px';
+                popup.style.right = '20px';
+                popup.style.marginLeft = '0';
+                popup.style.marginRight = '0';
+                popup.style.boxSizing = 'border-box';
+                popup.style.overflowX = 'hidden';
+            }
+
+            const shadowPopup = document.getElementById('shadow_popup');
+            if (shadowPopup) {
+                shadowPopup.style.width = '100vw';
+                shadowPopup.style.maxWidth = '100vw';
+                shadowPopup.style.overflowX = 'hidden';
+                shadowPopup.style.left = '0';
+                shadowPopup.style.right = '0';
+            }
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', preventHorizontalScroll);
+
+        // 窗口大小变化时重新执行
+        window.addEventListener('resize', preventHorizontalScroll);
+
+        // 定期检查（防止动态添加的元素）
+        setInterval(preventHorizontalScroll, 1000);
+    </script>
+    <script src="scripts/register.js"></script>
+</body>
+
+</html>

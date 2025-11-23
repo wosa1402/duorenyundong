@@ -1,0 +1,316 @@
+/* 公告弹窗样式 */
+.announcements-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.announcements-popup-overlay.show {
+    opacity: 1;
+}
+
+.announcements-popup {
+    background-color: var(--SmartThemeBlurTintColor);
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    max-height: 80vh;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s ease-in-out;
+}
+
+.announcements-popup-overlay.show .announcements-popup {
+    transform: scale(1);
+}
+
+.announcements-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: var(--SmartThemeBorderColor);
+    border-bottom: 1px solid var(--SmartThemeBorderColor);
+}
+
+.announcements-popup-header h2 {
+    margin: 0;
+    color: var(--SmartThemeBodyColor);
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.announcements-popup-header h2 i {
+    color: var(--crimson70a);
+}
+
+.announcements-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    color: var(--SmartThemeBodyColor);
+    padding: 5px;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+}
+
+.announcements-close-btn:hover {
+    background-color: var(--white30a);
+}
+
+.announcements-popup-content {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    max-height: 60vh;
+}
+
+.announcement-item {
+    background-color: var(--SmartThemeBlurTintColor);
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.announcement-item:last-child {
+    margin-bottom: 0;
+}
+
+.announcement-header {
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--SmartThemeBorderColor);
+    padding-bottom: 8px;
+}
+
+.announcement-title {
+    margin: 0;
+    color: var(--SmartThemeBodyColor);
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.announcement-content {
+    color: var(--SmartThemeBodyColor);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.announcement-footer {
+    text-align: right;
+    border-top: 1px solid var(--SmartThemeBorderColor);
+    padding-top: 8px;
+}
+
+.announcement-time {
+    color: var(--SmartThemeEmColor);
+    font-size: 0.9em;
+}
+
+.announcements-popup-footer {
+    padding: 15px 20px;
+    background-color: var(--SmartThemeBorderColor);
+    border-top: 1px solid var(--SmartThemeBorderColor);
+    text-align: center;
+}
+
+.announcements-confirm-btn {
+    background-color: var(--crimson70a);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+.announcements-confirm-btn:hover {
+    background-color: var(--crimson-hover);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .announcements-popup-overlay {
+        /* 保持居中布局，但调整尺寸以适应移动设备 */
+        padding: 0;
+        /* 使用视口高度但留出安全区域 */
+        height: 100vh;
+        height: 100dvh; /* 使用动态视口高度 */
+        max-height: 100vh;
+        max-height: 100dvh;
+        /* 处理iOS安全区域 */
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+
+    .announcements-popup {
+        width: 95%;
+        max-width: 95%;
+        /* 使用视口高度计算，但留出空间 */
+        max-height: 85vh;
+        max-height: 85dvh;
+        margin: 10px auto;
+        border-radius: 8px;
+        /* 保持flex布局但调整高度限制 */
+        height: auto;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        /* 确保弹窗不会被视口边界裁切 */
+        position: relative;
+    }
+
+    .announcements-popup-header {
+        padding: 12px 15px;
+        border-radius: 8px 8px 0 0;
+        flex-shrink: 0; /* 防止头部被压缩 */
+    }
+
+    .announcements-popup-header h2 {
+        font-size: 1.1em;
+    }
+
+    .announcements-popup-content {
+        padding: 15px;
+        overflow-y: auto;
+        flex: 1; /* 让内容区域填充剩余空间 */
+        /* 使用动态高度计算 */
+        max-height: calc(85vh - 120px); /* 减去头部和底部的大概高度 */
+        max-height: calc(85dvh - 120px);
+        min-height: 0; /* 允许 flexbox 正确收缩 */
+    }
+
+    .announcement-item {
+        padding: 12px;
+    }
+
+    .announcements-popup-footer {
+        padding: 12px 15px;
+        border-radius: 0 0 8px 8px;
+        flex-shrink: 0; /* 防止底部被压缩 */
+    }
+
+    .announcements-confirm-btn {
+        padding: 8px 16px;
+        font-size: 0.9em;
+    }
+
+    /* 处理小屏幕设备的额外调整 */
+    @media (max-height: 600px) {
+        .announcements-popup {
+            max-height: 90vh;
+            max-height: 90dvh;
+        }
+
+        .announcements-popup-content {
+            max-height: calc(90vh - 100px);
+            max-height: calc(90dvh - 100px);
+        }
+
+        .announcements-popup-header,
+        .announcements-popup-footer {
+            padding: 8px 12px;
+        }
+
+        .announcement-item {
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+    }
+}
+
+/* 滚动条样式 */
+.announcements-popup-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.announcements-popup-content::-webkit-scrollbar-track {
+    background: var(--SmartThemeBlurTintColor);
+    border-radius: 3px;
+}
+
+.announcements-popup-content::-webkit-scrollbar-thumb {
+    background: var(--SmartThemeBorderColor);
+    border-radius: 3px;
+}
+
+.announcements-popup-content::-webkit-scrollbar-thumb:hover {
+    background: var(--SmartThemeEmColor);
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.announcements-popup-overlay.show {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* 深色主题适配 */
+@media (prefers-color-scheme: dark) {
+    .announcements-popup {
+        background-color: var(--SmartThemeBlurTintColor);
+        border-color: var(--SmartThemeBorderColor);
+    }
+
+    .announcements-popup-header {
+        background-color: var(--SmartThemeBorderColor);
+    }
+
+    .announcements-popup-footer {
+        background-color: var(--SmartThemeBorderColor);
+    }
+
+    .announcement-item {
+        background-color: var(--SmartThemeBlurTintColor);
+        border-color: var(--SmartThemeBorderColor);
+    }
+}
+
+/* 无障碍支持 */
+.announcements-close-btn:focus,
+.announcements-confirm-btn:focus {
+    outline: 2px solid var(--crimson70a);
+    outline-offset: 2px;
+}
+
+/* 高对比度模式 */
+@media (prefers-contrast: high) {
+    .announcements-popup {
+        border-width: 2px;
+    }
+
+    .announcement-item {
+        border-width: 2px;
+    }
+}

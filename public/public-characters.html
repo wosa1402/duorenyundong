@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base href="/">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="darkreader-lock">
+    <meta name="robots" content="noindex, nofollow" />
+    <style>
+        /* Put critical CSS here. The rest should go in stylesheets. */
+        body {
+            background-color: rgb(36, 36, 37);
+        }
+    </style>
+    <link rel="preload" as="style" href="style.css">
+    <link rel="apple-touch-icon" sizes="57x57" href="img/apple-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="img/apple-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="img/apple-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="img/apple-icon-144x144.png" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="css/st-tailwind.css">
+    <link rel="stylesheet" type="text/css" href="css/public-characters.css">
+    <link rel="manifest" crossorigin="use-credentials" href="manifest.json">
+    <link href="webfonts/NotoSans/stylesheet.css" rel="stylesheet">
+    <link href="webfonts/NotoSansMono/stylesheet.css" rel="stylesheet">
+    <!-- fontawesome webfonts-->
+    <link href="css/fontawesome.min.css" rel="stylesheet">
+    <link href="css/solid.min.css" rel="stylesheet">
+    <link href="css/user.css" rel="stylesheet">
+    <title>SillyTavern - 公用角色卡</title>
+</head>
+
+<body>
+    <div class="public-characters-container">
+        <!-- 头部导航 -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="header-title">公用角色卡库</h1>
+                <p class="header-subtitle">发现和分享精彩的角色卡</p>
+                <div class="header-actions">
+                    <button id="uploadButton" class="btn btn-primary" style="display: none;">
+                        <i class="fa-solid fa-upload"></i>
+                        上传角色卡
+                    </button>
+                    <div id="userInfo" class="user-info" style="display: none;">
+                        <span class="user-greeting">欢迎，<span id="userName"></span></span>
+                        <a href="/" class="btn btn-secondary">
+                            <i class="fa-solid fa-user"></i>
+                            我的角色库
+                        </a>
+                    </div>
+                    <div id="loginPrompt" class="login-prompt">
+                        <span class="login-text">登录后可以上传和导入角色卡</span>
+                        <a href="/login" class="btn btn-secondary">
+                            <i class="fa-solid fa-sign-in-alt"></i>
+                            登录
+                        </a>
+                    </div>
+                    <a href="/" class="btn btn-secondary">
+                        <i class="fa-solid fa-home"></i>
+                        返回主页
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 搜索和筛选 -->
+        <div class="search-section">
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fa-solid fa-search search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="搜索角色卡...">
+                </div>
+                <div class="filter-container">
+                    <select id="sortSelect" class="filter-select">
+                        <option value="date">按上传时间</option>
+                        <option value="name">按名称</option>
+                        <option value="uploader">按上传者</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 角色卡网格 -->
+        <main class="characters-grid" id="charactersGrid">
+            <!-- 角色卡将通过JavaScript动态加载 -->
+        </main>
+
+        <!-- 加载更多按钮 -->
+        <div class="load-more-container">
+            <button id="loadMoreButton" class="btn btn-secondary" style="display: none;">
+                加载更多
+            </button>
+        </div>
+
+        <!-- 上传模态框 -->
+        <div id="uploadModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>上传角色卡</h2>
+                    <button class="modal-close" id="closeUploadModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadForm" class="upload-form">
+                        <div class="form-group">
+                            <label for="characterFile" class="form-label">选择角色卡文件</label>
+                            <input type="file" id="characterFile" class="form-input" accept=".json,.png,.yaml,.yml" required>
+                            <small class="form-hint">支持 JSON、PNG、YAML 格式</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="characterName" class="form-label">角色名称</label>
+                            <input type="text" id="characterName" class="form-input" placeholder="请输入角色名称" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="characterDescription" class="form-label">角色描述</label>
+                            <textarea id="characterDescription" class="form-textarea" placeholder="请输入角色描述（可选）" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="characterTags" class="form-label">标签</label>
+                            <input type="text" id="characterTags" class="form-input" placeholder="用逗号分隔多个标签（可选）">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">上传</button>
+                            <button type="button" class="btn btn-secondary" id="cancelUpload">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 角色卡详情模态框 -->
+        <div id="characterModal" class="modal" style="display: none;">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h2 id="characterModalTitle">角色卡详情</h2>
+                    <button class="modal-close" id="closeCharacterModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="character-detail">
+                        <div class="character-avatar">
+                            <img id="characterModalAvatar" src="" alt="角色头像">
+                        </div>
+                        <div class="character-info">
+                            <h3 id="characterModalName"></h3>
+                            <p id="characterModalDescription"></p>
+                            <div class="character-meta">
+                                <span class="meta-item">
+                                    <i class="fa-solid fa-user"></i>
+                                    上传者: <span id="characterModalUploader"></span>
+                                </span>
+                                <span class="meta-item">
+                                    <i class="fa-solid fa-calendar"></i>
+                                    上传时间: <span id="characterModalDate"></span>
+                                </span>
+                            </div>
+                            <div class="character-tags" id="characterModalTags"></div>
+                        </div>
+                    </div>
+                    <div class="character-actions">
+                        <button id="importCharacterButton" class="btn btn-primary">
+                            <i class="fa-solid fa-download"></i>
+                            导入到我的角色库
+                        </button>
+                        <button id="viewCharacterButton" class="btn btn-secondary">
+                            <i class="fa-solid fa-eye"></i>
+                            查看详情
+                        </button>
+                    </div>
+
+                    <!-- 评论区域 -->
+                    <div class="comments-section">
+                        <div class="comments-header">
+                            <h3><i class="fa-solid fa-comments"></i> 评论讨论</h3>
+                            <span class="comments-count" id="commentsCount">0 条评论</span>
+                        </div>
+
+                        <!-- 评论输入框（仅登录用户可见） -->
+                        <div class="comment-input-section" id="commentInputSection" style="display: none;">
+                            <div class="comment-input-box">
+                                <textarea id="commentInput" class="comment-textarea" placeholder="写下你对这个角色卡的看法..." rows="3"></textarea>
+                                <div class="comment-input-actions">
+                                    <button id="submitCommentButton" class="btn btn-primary">
+                                        <i class="fa-solid fa-paper-plane"></i>
+                                        发表评论
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 登录提示（游客用户可见） -->
+                        <div class="comment-login-prompt" id="commentLoginPrompt">
+                            <div class="login-prompt-box">
+                                <i class="fa-solid fa-lock"></i>
+                                <span>登录后可以参与评论讨论</span>
+                                <a href="/login" class="btn btn-secondary btn-small">登录</a>
+                            </div>
+                        </div>
+
+                        <!-- 评论列表 -->
+                        <div class="comments-list" id="commentsList">
+                            <!-- 评论将通过JavaScript动态加载 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 加载指示器 -->
+        <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+            <div class="spinner"></div>
+            <p>加载中...</p>
+        </div>
+    </div>
+
+    <script src="lib/jquery-3.5.1.min.js"></script>
+    <script src="scripts/public-characters.js"></script>
+</body>
+
+</html>

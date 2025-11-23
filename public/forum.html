@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交流平台 - SillyTavern</title>
+    <link rel="stylesheet" href="css/fontawesome.min.css">
+    <link rel="stylesheet" href="css/solid.min.css">
+    <link rel="stylesheet" href="css/forum.css">
+    <link rel="stylesheet" href="css/rich-editor.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <div class="forum-container">
+        <!-- 头部导航 -->
+        <header class="forum-header">
+            <div class="header-content">
+                <h1 class="forum-title">
+                    <i class="fa-solid fa-comments"></i>
+                    交流平台
+                </h1>
+                <div class="header-actions">
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <span class="welcome-text">欢迎, <span id="userName"></span></span>
+                        <button class="btn btn-primary" onclick="createArticle()">
+                            <i class="fa-solid fa-plus"></i>
+                            发布文章
+                        </button>
+                    </div>
+                    <div class="login-prompt" id="loginPrompt">
+                        <span>请先登录后发布文章</span>
+                        <a href="/login" class="btn btn-secondary">登录</a>
+                    </div>
+                    <a href="/welcome" class="btn btn-outline">
+                        <i class="fa-solid fa-home"></i>
+                        返回主页
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 搜索和筛选 -->
+        <div class="forum-controls">
+            <div class="search-section">
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="搜索文章..." />
+                </div>
+            </div>
+            <div class="filter-section">
+                <select id="categoryFilter" class="filter-select">
+                    <option value="">全部分类</option>
+                    <option value="tutorial">教程</option>
+                    <option value="discussion">讨论</option>
+                    <option value="announcement">公告</option>
+                    <option value="question">问答</option>
+                    <option value="showcase">展示</option>
+                </select>
+                <select id="sortFilter" class="filter-select">
+                    <option value="latest">最新发布</option>
+                    <option value="popular">最受欢迎</option>
+                    <option value="views">最多浏览</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 文章列表 -->
+        <main class="articles-container">
+            <div class="articles-grid" id="articlesGrid">
+                <!-- 文章卡片将在这里动态生成 -->
+            </div>
+
+            <!-- 加载指示器 -->
+            <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>加载中...</span>
+            </div>
+
+            <!-- 无文章提示 -->
+            <div id="noArticles" class="no-articles" style="display: none;">
+                <i class="fa-solid fa-newspaper"></i>
+                <h3>暂无文章</h3>
+                <p>还没有用户发布文章，快来发布第一篇吧！</p>
+            </div>
+        </main>
+
+        <!-- 分页 -->
+        <div class="pagination" id="pagination" style="display: none;">
+            <button class="btn btn-outline" id="prevPage" onclick="previousPage()">
+                <i class="fa-solid fa-chevron-left"></i>
+                上一页
+            </button>
+            <span class="page-info" id="pageInfo">第 1 页，共 1 页</span>
+            <button class="btn btn-outline" id="nextPage" onclick="nextPage()">
+                下一页
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 发布文章模态框 -->
+    <div id="articleModal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="articleModalTitle">发布新文章</h2>
+                <button class="modal-close" onclick="closeArticleModal()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="articleForm">
+                    <div class="form-group">
+                        <label for="articleTitle">标题</label>
+                        <input type="text" id="articleTitle" name="title" required placeholder="请输入文章标题">
+                    </div>
+                    <div class="form-group">
+                        <label for="articleCategory">分类</label>
+                        <select id="articleCategory" name="category" required>
+                            <option value="discussion">讨论</option>
+                            <option value="tutorial">教程</option>
+                            <option value="question">问答</option>
+                            <option value="showcase">展示</option>
+                            <option value="announcement">公告</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="articleTags">标签</label>
+                        <input type="text" id="articleTags" name="tags" placeholder="用逗号分隔多个标签">
+                    </div>
+                    <div class="form-group">
+                        <label for="articleContent">内容</label>
+                        <div class="rich-editor-container">
+                            <div class="rich-editor-toolbar">
+                                <button type="button" class="toolbar-btn" data-command="bold" title="粗体">
+                                    <i class="fa-solid fa-bold"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" data-command="italic" title="斜体">
+                                    <i class="fa-solid fa-italic"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" data-command="underline" title="下划线">
+                                    <i class="fa-solid fa-underline"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" data-command="strikeThrough" title="删除线">
+                                    <i class="fa-solid fa-strikethrough"></i>
+                                </button>
+                                <div class="toolbar-separator"></div>
+                                <button type="button" class="toolbar-btn" data-command="insertUnorderedList" title="无序列表">
+                                    <i class="fa-solid fa-list-ul"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" data-command="insertOrderedList" title="有序列表">
+                                    <i class="fa-solid fa-list-ol"></i>
+                                </button>
+                                <div class="toolbar-separator"></div>
+                                <button type="button" class="toolbar-btn" data-command="createLink" title="插入链接">
+                                    <i class="fa-solid fa-link"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="insertImageBtn" title="插入图片">
+                                    <i class="fa-solid fa-image"></i>
+                                </button>
+                                <div class="toolbar-separator"></div>
+                                <button type="button" class="toolbar-btn" data-command="formatBlock" data-value="h1" title="标题1">
+                                    H1
+                                </button>
+                                <button type="button" class="toolbar-btn" data-command="formatBlock" data-value="h2" title="标题2">
+                                    H2
+                                </button>
+                                <button type="button" class="toolbar-btn" data-command="formatBlock" data-value="h3" title="标题3">
+                                    H3
+                                </button>
+                                <div class="toolbar-separator"></div>
+                                <button type="button" class="toolbar-btn" data-command="justifyLeft" title="左对齐">
+                                    <i class="fa-solid fa-align-left"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" data-command="justifyCenter" title="居中对齐">
+                                    <i class="fa-solid fa-align-center"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" data-command="justifyRight" title="右对齐">
+                                    <i class="fa-solid fa-align-right"></i>
+                                </button>
+                            </div>
+                            <div class="rich-editor-content" id="articleContent" contenteditable="true" placeholder="请输入文章内容..."></div>
+                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeArticleModal()">取消</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            发布文章
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文章详情模态框 -->
+    <div id="articleDetailModal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="articleDetailTitle"></h2>
+                <button class="modal-close" onclick="closeArticleDetailModal()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="article-detail">
+                    <div class="article-meta">
+                        <span class="article-author">
+                            <i class="fa-solid fa-user"></i>
+                            <span id="articleDetailAuthor"></span>
+                        </span>
+                        <span class="article-date">
+                            <i class="fa-solid fa-calendar"></i>
+                            <span id="articleDetailDate"></span>
+                        </span>
+                        <span class="article-category">
+                            <i class="fa-solid fa-tag"></i>
+                            <span id="articleDetailCategory"></span>
+                        </span>
+                        <span class="article-views">
+                            <i class="fa-solid fa-eye"></i>
+                            <span id="articleDetailViews">0</span> 次浏览
+                        </span>
+                    </div>
+                    <div class="article-tags" id="articleDetailTags"></div>
+                    <div class="article-content" id="articleDetailContent"></div>
+
+                    <!-- 文章操作按钮 -->
+                    <div class="article-actions" id="articleActions">
+                        <button class="btn btn-outline" onclick="likeArticle()">
+                            <i class="fa-solid fa-heart"></i>
+                            <span id="articleLikes">0</span> 点赞
+                        </button>
+                        <button class="btn btn-outline" onclick="shareArticle()">
+                            <i class="fa-solid fa-share"></i>
+                            分享
+                        </button>
+                        <button class="btn btn-danger" id="deleteArticleBtn" style="display: none;">
+                            <i class="fa-solid fa-trash"></i>
+                            删除文章
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 评论区 -->
+                <div class="comments-section">
+                    <h3>评论 (<span id="commentsCount">0</span>)</h3>
+
+                    <!-- 发表评论 -->
+                    <div class="comment-form" id="commentForm">
+                        <textarea id="commentContent" placeholder="写下你的评论..." rows="3"></textarea>
+                        <button class="btn btn-primary" onclick="submitComment()">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            发表评论
+                        </button>
+                    </div>
+
+                    <!-- 评论列表 -->
+                    <div class="comments-list" id="commentsList">
+                        <!-- 评论将在这里动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/forum.js"></script>
+    <script src="scripts/rich-editor.js"></script>
+</body>
+</html>

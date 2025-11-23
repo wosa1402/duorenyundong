@@ -1,0 +1,927 @@
+/* 公用角色卡页面样式 - 深色主题 */
+
+/* 使用与主题一致的CSS变量 */
+:root {
+    --public-characters-body-color: rgb(220, 220, 210);
+    --public-characters-blur-tint: rgba(23, 23, 23, 1);
+    --public-characters-border-color: rgba(0, 0, 0, 0.5);
+    --public-characters-shadow-color: rgba(0, 0, 0, 0.5);
+    --public-characters-em-color: rgb(145, 145, 145);
+}
+
+/* 确保页面可以正常滚动 */
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+/* 自定义滚动条样式 - 与主题一致 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(125, 125, 125, 0.5);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(125, 125, 125, 0.7);
+}
+
+/* 主容器 - 使用主题背景色 */
+.public-characters-container {
+    min-height: 100vh;
+    height: auto;
+    background-color: rgba(23, 23, 23, 1); /* 使用主题的 SmartThemeBlurTintColor */
+    color: rgb(220, 220, 210); /* 使用主题的 SmartThemeBodyColor */
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* 头部样式 - 深色主题 */
+.header {
+    background: rgba(0, 0, 0, 0.3); /* 更深的背景 */
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5); /* 使用主题边框色 */
+    padding: 2rem 0;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
+}
+
+.header-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: rgb(220, 220, 210); /* 使用主题文字色 */
+}
+
+.header-subtitle {
+    font-size: 1.2rem;
+    color: rgba(220, 220, 210, 0.7); /* 使用主题文字色的透明版本 */
+    margin: 0 0 2rem 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-greeting {
+    color: rgba(220, 220, 210, 0.9); /* 使用主题文字色 */
+    font-weight: 500;
+}
+
+.login-prompt {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.login-text {
+    color: rgba(220, 220, 210, 0.7); /* 使用主题文字色 */
+    font-size: 0.9rem;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 48px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.btn-secondary {
+    background: rgba(0, 0, 0, 0.3); /* 更深的背景 */
+    color: rgb(220, 220, 210); /* 使用主题文字色 */
+    border: 2px solid rgba(0, 0, 0, 0.5); /* 使用主题边框色 */
+}
+
+.btn-secondary:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(125, 125, 125, 0.7);
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn:disabled:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* 搜索区域 - 深色主题 */
+.search-section {
+    padding: 2rem 0;
+    background: rgba(0, 0, 0, 0.2); /* 更深的背景 */
+}
+
+.search-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 300px;
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(220, 220, 210, 0.6); /* 使用主题文字色 */
+    z-index: 1;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px 12px 48px;
+    background: rgba(0, 0, 0, 0.3); /* 更深的背景 */
+    border: 2px solid rgba(0, 0, 0, 0.5); /* 使用主题边框色 */
+    border-radius: 8px;
+    color: rgb(220, 220, 210); /* 使用主题文字色 */
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-input::placeholder {
+    color: rgba(220, 220, 210, 0.6); /* 使用主题文字色 */
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.filter-select {
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.3); /* 更深的背景 */
+    border: 2px solid rgba(0, 0, 0, 0.5); /* 使用主题边框色 */
+    border-radius: 8px;
+    color: rgb(220, 220, 210); /* 使用主题文字色 */
+    font-size: 1rem;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+/* 确保select的option也是深色的 */
+.filter-select option {
+    background: rgba(23, 23, 23, 1);
+    color: rgb(220, 220, 210);
+}
+
+/* 角色卡网格 */
+.characters-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.character-card {
+    background: rgba(0, 0, 0, 0.4); /* 更深的背景 */
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.5); /* 使用主题边框色 */
+    display: flex;
+    flex-direction: column;
+    height: auto; /* 自适应高度以适配长图 */
+}
+
+.character-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    border-color: rgba(125, 125, 125, 0.5);
+}
+
+.character-avatar {
+    width: 100%;
+    aspect-ratio: 3 / 4; /* 竖向长方形比例 */
+    overflow: hidden;
+    position: relative;
+    background: rgba(0,0,0,0.2);
+}
+
+.character-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 填充显示，保留人物主体 */
+    object-position: center;
+    transition: transform 0.3s ease;
+}
+
+.character-card:hover .character-avatar img {
+    transform: scale(1.05);
+}
+
+.character-info {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.character-content {
+    flex: 1;
+}
+
+.character-footer {
+    margin-top: auto;
+}
+
+.character-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: rgb(220, 220, 210); /* 使用主题文字色 */
+}
+
+.character-description {
+    color: rgba(220, 220, 210, 0.8); /* 使用主题文字色 */
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0 0 1rem 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3; /* 标准属性 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    max-height: 4.5em; /* 3行文本的最大高度 */
+}
+
+.character-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: rgba(220, 220, 210, 0.6); /* 使用主题文字色 */
+    margin-bottom: 1rem;
+}
+
+.character-uploader {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.character-date {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.character-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.character-tag {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.character-actions {
+    padding: 0 1.5rem 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.character-actions .btn {
+    flex: 1;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    min-height: 40px;
+}
+
+.character-actions .btn-danger {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    color: white;
+    border: none;
+}
+
+.character-actions .btn-danger:hover {
+    background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+
+/* 模态框样式 - 深色主题 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9); /* 更深的遮罩 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.modal-content {
+    background: rgba(23, 23, 23, 0.95); /* 使用主题背景色 */
+    border-radius: 16px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 1px solid rgba(0, 0, 0, 0.5); /* 使用主题边框色 */
+    backdrop-filter: blur(20px);
+}
+
+.modal-large {
+    max-width: 800px;
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: rgb(220, 220, 210); /* 使用主题文字色 */
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: rgba(220, 220, 210, 0.6); /* 使用主题文字色 */
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: rgba(0, 0, 0, 0.3);
+    color: rgb(220, 220, 210);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* 表单样式 */
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: rgb(220, 220, 210); /* 使用主题文字色 */
+}
+
+.form-input, .form-textarea {
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.3); /* 更深的背景 */
+    border: 2px solid rgba(0, 0, 0, 0.5); /* 使用主题边框色 */
+    border-radius: 8px;
+    color: rgb(220, 220, 210); /* 使用主题文字色 */
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    resize: vertical;
+}
+
+.form-input::placeholder, .form-textarea::placeholder {
+    color: rgba(220, 220, 210, 0.6); /* 使用主题文字色 */
+}
+
+.form-input:focus, .form-textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.form-hint {
+    font-size: 0.8rem;
+    color: rgba(220, 220, 210, 0.6); /* 使用主题文字色 */
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.form-actions .btn {
+    flex: 1;
+}
+
+/* 角色详情样式 */
+.character-detail {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.character-detail .character-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.character-detail .character-info {
+    flex: 1;
+    padding: 0;
+}
+
+.character-detail .character-info h3 {
+    font-size: 1.5rem;
+    margin: 0 0 1rem 0;
+    color: rgb(220, 220, 210); /* 使用主题文字色 */
+}
+
+.character-detail .character-info p {
+    color: rgba(220, 220, 210, 0.8); /* 使用主题文字色 */
+    line-height: 1.6;
+    margin: 0 0 1.5rem 0;
+}
+
+.character-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(220, 220, 210, 0.7); /* 使用主题文字色 */
+    font-size: 0.9rem;
+}
+
+.character-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* 加载指示器 - 深色主题 */
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    color: rgba(220, 220, 210, 0.8); /* 使用主题文字色 */
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.3); /* 更深的边框 */
+    border-top: 4px solid #4CAF50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* FontAwesome spinner动画 */
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* 加载更多按钮 */
+.load-more-container {
+    text-align: center;
+    padding: 2rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .header-title {
+        font-size: 2rem;
+    }
+
+    .search-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        min-width: auto;
+    }
+
+    .characters-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .character-card {
+        height: auto; /* 移动端使用自动高度 */
+        min-height: 400px;
+    }
+
+    .character-detail {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .character-detail .character-avatar {
+        width: 100px;
+        height: 100px;
+        align-self: center;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content {
+        padding: 0 1rem;
+    }
+
+    .header-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .characters-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .character-card {
+        height: auto; /* 小屏幕使用自动高度 */
+        min-height: 350px;
+    }
+
+    .character-actions {
+        flex-direction: column;
+    }
+}
+
+/* 评论系统样式 */
+.comments-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.comments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.comments-header h3 {
+    margin: 0;
+    color: rgb(220, 220, 210);
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.comments-count {
+    color: rgba(220, 220, 210, 0.6);
+    font-size: 0.9rem;
+}
+
+/* 评论输入区域 */
+.comment-input-section {
+    margin-bottom: 2rem;
+}
+
+.comment-input-box {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.comment-textarea, .reply-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    color: rgb(220, 220, 210);
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.comment-textarea::placeholder, .reply-textarea::placeholder {
+    color: rgba(220, 220, 210, 0.5);
+}
+
+.comment-textarea:focus, .reply-textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+    background: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+}
+
+.comment-input-actions, .reply-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* 登录提示 */
+.comment-login-prompt {
+    margin-bottom: 2rem;
+}
+
+.login-prompt-box {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    color: rgba(220, 220, 210, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.login-prompt-box i {
+    font-size: 1.2rem;
+    color: rgba(220, 220, 210, 0.5);
+}
+
+/* 评论列表 */
+.comments-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.no-comments {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: rgba(220, 220, 210, 0.5);
+}
+
+.no-comments p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* 评论项 */
+.comment-item {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.comment-item:hover {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(125, 125, 125, 0.3);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.comment-author {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(220, 220, 210, 0.8);
+    font-size: 0.9rem;
+}
+
+.author-name {
+    font-weight: 600;
+    color: rgb(220, 220, 210);
+}
+
+.comment-date {
+    color: rgba(220, 220, 210, 0.5);
+    font-size: 0.8rem;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.comment-reply, .comment-delete {
+    background: none;
+    border: none;
+    color: rgba(220, 220, 210, 0.6);
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.comment-reply:hover {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+}
+
+.comment-delete:hover {
+    background: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+}
+
+.comment-content {
+    color: rgb(220, 220, 210);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+    word-wrap: break-word;
+}
+
+/* 回复输入框 */
+.comment-reply-input {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.reply-textarea {
+    min-height: 60px;
+}
+
+/* 回复嵌套 */
+.comment-replies {
+    margin-top: 1rem;
+    border-left: 2px solid rgba(76, 175, 80, 0.3);
+    padding-left: 1rem;
+}
+
+.comment-replies .comment-item {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* 按钮样式扩展 */
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    min-height: 32px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .comments-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .comment-input-actions, .reply-actions {
+        flex-direction: column;
+    }
+
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .comment-actions {
+        align-self: flex-end;
+    }
+
+    .login-prompt-box {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .comments-section {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+    }
+
+    .comment-item {
+        padding: 0.75rem;
+        margin-left: 0 !important; /* 移动端不缩进回复 */
+    }
+
+    .comment-replies {
+        padding-left: 0.5rem;
+        margin-left: 0;
+    }
+}

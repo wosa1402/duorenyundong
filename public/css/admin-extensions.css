@@ -1,0 +1,723 @@
+/* 管理员面板扩展样式 */
+
+/* 系统负载监控样式 */
+.systemOverview {
+    margin-bottom: 30px;
+}
+
+.systemCard {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.systemCard h4 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.systemMetric {
+    margin-bottom: 10px;
+}
+
+.metricValue {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.metricUnit {
+    font-size: 1rem;
+    color: #666;
+    margin-left: 5px;
+}
+
+.progressBar {
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* 用户活动统计样式 */
+.userActivitySection {
+    margin-top: 30px;
+}
+
+.userActivitySection h4 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.userActivityList {
+    max-height: 580px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.userActivityItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.userActivityItem:last-child {
+    border-bottom: none;
+}
+
+.userActivityInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.userActivityName {
+    font-weight: 600;
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+.userActivityHandle {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.userActivityDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.userActivityDetail {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2px 8px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.userActivityStats {
+    display: flex;
+    gap: 20px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.userActivityStat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.userActivityStatValue {
+    font-weight: bold;
+    color: #667eea;
+}
+
+.userActivityStatLabel {
+    font-size: 0.8rem;
+}
+
+/* 邀请码管理样式 */
+.createInvitationSection {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.creation-mode {
+    margin-bottom: 15px;
+}
+
+.creation-toggle {
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.creation-toggle-btn {
+    min-width: 120px;
+}
+
+.creation-toggle-btn.active {
+    background: #667eea;
+    color: white;
+}
+
+.creation-toggle-btn:not(.active) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #666;
+}
+
+.batch-operations {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.batch-operations h4 {
+    margin: 0 0 15px 0;
+    color: #fff;
+    font-size: 1.1rem;
+    text-align: center;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.createInvitationSection h4 {
+    margin: 0 0 15px 0;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.invitationCodesList h4 {
+    margin-bottom: 15px;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.userActivitySection h4 {
+    margin-bottom: 15px;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.systemCard h4 {
+    margin: 0 0 15px 0;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.createInvitationForm,
+.createBatchInvitationForm {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 15px;
+}
+
+.createInvitationForm .flex-container,
+.createBatchInvitationForm .flex-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 150px;
+}
+
+.createInvitationForm .flex-container span,
+.createBatchInvitationForm .flex-container span {
+    margin-bottom: 5px;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.createInvitationForm .text_pole,
+.createBatchInvitationForm .text_pole {
+    width: 100%;
+    min-width: 150px;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.createInvitationForm .text_pole:focus,
+.createBatchInvitationForm .text_pole:focus {
+    outline: none;
+    border-color: #667eea;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.createInvitationForm .text_pole::placeholder,
+.createBatchInvitationForm .text_pole::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.createInvitationForm button,
+.createBatchInvitationForm button {
+    height: 36px;
+    margin-top: 0;
+    align-self: flex-end;
+}
+
+
+.invitationCodesContainer {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.invitationCodeItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.2s ease;
+}
+
+.invitationCodeItem:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.invitationCodeItem.selected {
+    background: rgba(102, 126, 234, 0.1);
+    border-left: 3px solid #667eea;
+}
+
+.invitationCodeCheckbox {
+    margin-right: 15px;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.invitationCodeItem:last-child {
+    border-bottom: none;
+}
+
+.invitationCodeInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.invitationCodeValue {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    color: #fff;
+    font-size: 1.1rem;
+    background: rgba(102, 126, 234, 0.3);
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    cursor: pointer;
+    user-select: all;
+    border: 1px solid rgba(102, 126, 234, 0.5);
+    transition: all 0.2s ease;
+}
+
+.invitationCodeValue:hover {
+    background: rgba(102, 126, 234, 0.5);
+    border-color: rgba(102, 126, 234, 0.8);
+    transform: scale(1.02);
+}
+
+.invitationCodeMeta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 8px;
+}
+
+.invitationCodeMeta span {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+}
+
+.invitationCodeStatus {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.invitationCodeStatus.unused {
+    background: #d4edda;
+    color: #155724;
+}
+
+.invitationCodeStatus.used {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.invitationCodeStatus.expired {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.invitationCodeActions {
+    display: flex;
+    gap: 5px;
+}
+
+.invitationCodeActions .menu_button {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+
+/* 空状态样式 */
+.emptyState {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.emptyState i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #ccc;
+}
+
+.emptyState h4 {
+    margin: 0 0 10px 0;
+    color: #666;
+}
+
+.emptyState p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* 加载状态样式 */
+.loadingState {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.loadingSpinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .systemOverview {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .systemCard {
+        padding: 15px;
+    }
+
+    .metricValue {
+        font-size: 1.5rem;
+    }
+
+    .userActivityItem,
+    .invitationCodeItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .userActivityStats {
+        align-self: stretch;
+        justify-content: space-around;
+    }
+
+    .invitationCodeActions {
+        align-self: stretch;
+        justify-content: center;
+    }
+
+    .createInvitationForm {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* 深色主题适配 */
+@media (prefers-color-scheme: dark) {
+    .systemCard {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .systemCard h4,
+    .userActivityName,
+    .invitationCodeValue {
+        color: #fff;
+    }
+
+    .userActivityList,
+    .invitationCodesContainer {
+        background: rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .userActivityItem,
+    .invitationCodeItem {
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .createInvitationSection {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .invitationCodeValue {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .invitationCodeValue:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* 公告管理样式 */
+.announcementsBlock {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* 公告类型切换按钮样式 */
+.announcement-type-tab {
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.announcement-type-tab.active {
+    opacity: 1;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+    border-color: rgba(102, 126, 234, 0.5);
+}
+
+.announcement-type-tab:not(.active):hover {
+    opacity: 0.9;
+}
+
+.announcement-section {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.createAnnouncementSection {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.createAnnouncementSection h4 {
+    margin: 0 0 15px 0;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.createAnnouncementForm {
+    gap: 15px;
+}
+
+.createAnnouncementForm .flex-container.flexGap10 {
+    gap: 10px;
+}
+
+.createAnnouncementForm textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.announcementsList {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.announcementsList h4 {
+    margin: 0 0 15px 0;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.announcementsContainer {
+    max-height: 600px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.announcementItem {
+    display: flex;
+    flex-direction: column;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.2s ease;
+}
+
+.announcementItem:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.announcementItem:last-child {
+    border-bottom: none;
+}
+
+.announcementHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.announcementTitle {
+    font-weight: 600;
+    color: #fff;
+    font-size: 1.1rem;
+    margin-right: 15px;
+    flex: 1;
+}
+
+.announcementType {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-right: 10px;
+}
+
+.announcementType.info {
+    background: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+    border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.announcementType.warning {
+    background: rgba(241, 196, 15, 0.2);
+    color: #f1c40f;
+    border: 1px solid rgba(241, 196, 15, 0.3);
+}
+
+.announcementType.success {
+    background: rgba(39, 174, 96, 0.2);
+    color: #27ae60;
+    border: 1px solid rgba(39, 174, 96, 0.3);
+}
+
+.announcementType.error {
+    background: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.announcementStatus {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.announcementStatus.enabled {
+    background: rgba(39, 174, 96, 0.2);
+    color: #27ae60;
+    border: 1px solid rgba(39, 174, 96, 0.3);
+}
+
+.announcementStatus.disabled {
+    background: rgba(149, 165, 166, 0.2);
+    color: #95a5a6;
+    border: 1px solid rgba(149, 165, 166, 0.3);
+}
+
+.announcementContent {
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.5;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.announcementMeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 10px;
+}
+
+.announcementActions {
+    display: flex;
+    gap: 10px;
+}
+
+.announcementActions button {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    min-width: auto;
+}
+
+.announcementActions button.warning {
+    background: rgba(241, 196, 15, 0.2);
+    border-color: rgba(241, 196, 15, 0.3);
+    color: #f1c40f;
+}
+
+.announcementActions button.danger {
+    background: rgba(231, 76, 60, 0.2);
+    border-color: rgba(231, 76, 60, 0.3);
+    color: #e74c3c;
+}
