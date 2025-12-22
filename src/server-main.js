@@ -92,6 +92,7 @@ if (!cliArgs.enableIPv6 && !cliArgs.enableIPv4) {
 }
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(helmet({
     contentSecurityPolicy: false,
 }));
@@ -211,11 +212,8 @@ if (!cliArgs.disableCsrf) {
     });
 }
 
-// Static files
-// Host welcome page as default homepage for unauthenticated users
 app.get('/', cacheBuster.middleware, (request, response) => {
-    // 如果已登录，进入应用；否则显示欢迎页
-    if (request.user) {
+    if (request.session && (request.session.userId || request.session.handle)) {
         return response.sendFile('index.html', { root: path.join(serverDirectory, 'public') });
     }
     return response.sendFile('welcome.html', { root: path.join(serverDirectory, 'public') });

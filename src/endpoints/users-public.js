@@ -111,7 +111,6 @@ router.post('/login', async (request, response) => {
         const ip = getIpAddress(request);
         await loginLimiter.consume(ip);
 
-        // 规范化用户名
         const normalizedHandle = normalizeHandle(request.body.handle);
 
         if (!normalizedHandle) {
@@ -119,7 +118,6 @@ router.post('/login', async (request, response) => {
             return response.status(400).json({ error: '用户名格式无效' });
         }
 
-        /** @type {import('../users.js').User} */
         const user = await storage.getItem(toKey(normalizedHandle));
 
         if (!user) {
@@ -132,7 +130,6 @@ router.post('/login', async (request, response) => {
             return response.status(403).json({ error: '用户已被禁用' });
         }
 
-        // 检查用户是否过期
         if (user.expiresAt && user.expiresAt < Date.now()) {
             console.warn('Login failed: User', user.handle, 'subscription expired');
             const purchaseLink = await getPurchaseLink();
@@ -143,7 +140,6 @@ router.post('/login', async (request, response) => {
             });
         }
 
-        // 检查是否为第三方OAuth登录用户（未设置密码的情况）
         if (user.oauthProvider && !user.password && !user.salt) {
             const providerNames = {
                 'github': 'GitHub',
@@ -157,17 +153,13 @@ router.post('/login', async (request, response) => {
             });
         }
 
-        // 特殊情况：default-user 允许无密码登录（用于初始设置）
         const isDefaultUser = user.handle === 'default-user';
 
-        // 检查密码
         if (!user.password || !user.salt) {
-            // default-user 允许无密码登录
             if (!isDefaultUser) {
                 console.warn('Login failed: User', user.handle, 'has no password set');
                 return response.status(403).json({ error: '此账户未设置密码，请联系管理员' });
             }
-            // default-user 无密码时，允许直接登录
             console.info('Default user login without password');
         } else if (user.password !== getPasswordHash(request.body.password, user.salt)) {
             console.warn('Login failed: Incorrect password for', user.handle);
@@ -176,31 +168,31 @@ router.post('/login', async (request, response) => {
 
         if (!request.session) {
             console.error('Session not available');
-            return response.sendStatus(500);
+            return response.status(500).json({ error: 'Session not available' });
         }
 
         await loginLimiter.delete(ip);
         request.session.handle = user.handle;
+        request.session.userId = user.id || user.handle;
 
-        // 记录用户登录到系统监控器
         systemMonitor.recordUserLogin(user.handle, { userName: user.name });
 
-        // 立即更新用户活动状态，确保在线状态准确
         systemMonitor.updateUserActivity(user.handle, {
             userName: user.name,
-            isHeartbeat: false, // 登录时不是心跳，但会触发活动更新
+            isHeartbeat: false,
         });
 
         console.info('Login successful:', user.handle, 'from', ip, 'at', new Date().toLocaleString());
+        
         return response.json({ handle: user.handle });
     } catch (error) {
         if (error instanceof RateLimiterRes) {
             console.error('Login failed: Rate limited from', getIpAddress(request));
-            return response.status(429).send({ error: '尝试次数过多，请稍后重试或恢复密码' });
+            return response.status(429).json({ error: '尝试次数过多，请稍后重试或恢复密码' });
         }
 
         console.error('Login failed:', error);
-        return response.sendStatus(500);
+        return response.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
