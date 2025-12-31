@@ -1,0 +1,22 @@
+{
+    "webdav": {
+        "url": "https://dav.jianguoyun.com/dav/",
+        "username": "your-email@example.com",
+        "password": "your-app-password",
+        "remotePath": "/SillyTavern-Backup"
+    },
+    "watchDir": "../data",
+    "debounceMs": 2000,
+    "initialSync": true,
+    "syncDelete": false,
+    "verbose": false,
+    "statsInterval": 300,
+    "ignorePatterns": [
+        "_cache",
+        "_webpack",
+        "thumbnails",
+        ".tmp",
+        ".temp",
+        "node_modules"
+    ]
+}

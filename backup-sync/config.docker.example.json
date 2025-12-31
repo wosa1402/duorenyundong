@@ -1,0 +1,22 @@
+{
+    "webdav": {
+        "url": "https://your-webdav-server.com",
+        "username": "your-username",
+        "password": "your-password",
+        "remotePath": "/SillyTavern-Backup"
+    },
+    "watchDir": "/data",
+    "debounceMs": 2000,
+    "initialSync": true,
+    "syncDelete": false,
+    "verbose": false,
+    "statsInterval": 300,
+    "ignorePatterns": [
+        "_cache",
+        "_webpack",
+        "thumbnails",
+        ".tmp",
+        ".temp",
+        "node_modules"
+    ]
+}

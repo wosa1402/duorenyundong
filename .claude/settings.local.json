@@ -3,7 +3,9 @@
     "allow": [
       "Bash(git init)",
       "Bash(git remote add origin https://github.com/zhaiiker/SillyTavernchat.git)",
-      "Bash(git add .)"
+      "Bash(git add .)",
+      "Bash(git remote remove:*)",
+      "Bash(git remote add:*)"
     ],
     "deny": [],
     "ask": []

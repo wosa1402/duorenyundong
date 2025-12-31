@@ -1,0 +1,19 @@
+{
+    "name": "sillytavern-backup-sync",
+    "version": "1.0.0",
+    "description": "SillyTavern 实时备份同步工具 - 监控文件变化并同步到 WebDAV",
+    "main": "sync.js",
+    "scripts": {
+        "start": "node sync.js",
+        "dev": "node sync.js"
+    },
+    "dependencies": {
+        "chokidar": "^3.5.3",
+        "webdav": "^5.3.0"
+    },
+    "engines": {
+        "node": ">=16.0.0"
+    },
+    "author": "",
+    "license": "MIT"
+}

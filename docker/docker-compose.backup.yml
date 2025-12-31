@@ -1,0 +1,34 @@
+# SillyTavern 带实时备份的 Docker Compose 配置
+# 包含主服务和备份同步 sidecar
+
+services:
+  sillytavern:
+    build: ..
+    container_name: sillytavernchat
+    hostname: sillytavernchat
+    image: zhaiker/sillytavernchat-zk:latest
+    environment:
+      - NODE_ENV=production
+      - FORCE_COLOR=1
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./config:/home/node/app/config"
+      - "./data:/home/node/app/data"
+      - "./plugins:/home/node/app/plugins"
+      - "./extensions:/home/node/app/public/scripts/extensions/third-party"
+    restart: unless-stopped
+
+  # 实时备份同步服务
+  backup-sync:
+    build: ../backup-sync
+    container_name: sillytavern-backup-sync
+    volumes:
+      # 挂载需要备份的数据目录（只读）
+      - "./data:/data:ro"
+      - "./config:/data-config:ro"
+      # 挂载备份配置文件
+      - "./backup-config.json:/config/config.json:ro"
+    restart: unless-stopped
+    depends_on:
+      - sillytavern
