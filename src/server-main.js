@@ -214,7 +214,10 @@ if (!cliArgs.disableCsrf) {
 }
 
 app.get('/', cacheBuster.middleware, (request, response) => {
-    if (request.session && (request.session.userId || request.session.handle)) {
+    // 检查用户是否已登录（使用 request.user 或 session）
+    const isLoggedIn = request.user ||
+                       (request.session && (request.session.userId || request.session.handle));
+    if (isLoggedIn) {
         return response.sendFile('index.html', { root: path.join(serverDirectory, 'public') });
     }
     return response.sendFile('welcome.html', { root: path.join(serverDirectory, 'public') });
