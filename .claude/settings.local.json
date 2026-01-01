@@ -9,7 +9,9 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\n添加实时备份同步功能和 HuggingFace Space 部署支持\n\n- 新增 backup-sync 模块：实时监控文件变化并同步到 WebDAV\n- 新增 hf 目录：HuggingFace Space Docker 部署配置\n- 支持从环境变量配置 WebDAV 凭据\n- 支持自动从 WebDAV 恢复数据\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git config user.name \"wosa1402\")",
       "Bash(git config user.email \"wosa1402@users.noreply.github.com\")",
-      "Bash(git push -u origin main --force)"
+      "Bash(git push -u origin main --force)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

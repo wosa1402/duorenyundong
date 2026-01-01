@@ -30,7 +30,7 @@ const localDataDir = path.resolve(config.watchDir || '../data');
 const remoteBasePath = config.webdav.remotePath || '/';
 
 // 并发控制
-const CONCURRENCY = config.restoreConcurrency || 10; // 默认 10 个并发
+const CONCURRENCY = config.restoreConcurrency || 50; // 默认 50 个并发
 
 // 统计
 const stats = {
