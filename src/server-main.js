@@ -214,6 +214,14 @@ if (!cliArgs.disableCsrf) {
 }
 
 app.get('/', cacheBuster.middleware, (request, response) => {
+    // 调试日志
+    console.log('[DEBUG /] session:', JSON.stringify({
+        handle: request.session?.handle,
+        userId: request.session?.userId,
+    }));
+    console.log('[DEBUG /] user:', request.user ? 'exists' : 'null');
+    console.log('[DEBUG /] cookies:', request.headers.cookie);
+
     // 检查用户是否已登录（使用 request.user 或 session）
     const isLoggedIn = request.user ||
                        (request.session && (request.session.userId || request.session.handle));
