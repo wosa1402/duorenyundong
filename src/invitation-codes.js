@@ -198,8 +198,8 @@ export async function deleteInvitationCode(code) {
     return true;
 }
 
-// isInvitationCodesEnabled 已从 dynamic-config.js 导入并在此模块中使用
-// 不再需要本地定义
+// 重新导出 isInvitationCodesEnabled，供其他模块使用
+export { isInvitationCodesEnabled };
 
 /**
  * 清理已使用的邀请码（可选功能）
