@@ -2,6 +2,7 @@
 /**
  * SillyTavern 实时备份同步脚本
  * 监控 data 和 config 目录的文件变化，实时同步到 WebDAV
+ * 支持多目录监控，配置文件变更也会被备份
  */
 
 const chokidar = require('chokidar');
@@ -28,9 +29,20 @@ const webdavClient = createClient(config.webdav.url, {
     password: config.webdav.password,
 });
 
+// 监控目录配置
+// watchDirs 是一个数组，每个元素包含 localDir 和 remotePrefix
+const watchDirs = config.watchDirs || [
+    { localDir: config.watchDir || '../data', remotePrefix: 'data' }
+];
+
+// 如果配置了 watchConfigDir，添加 config 目录监控
+if (config.watchConfigDir) {
+    watchDirs.push({ localDir: config.watchConfigDir, remotePrefix: 'config' });
+}
+
 // 防抖队列 - 避免频繁上传
 const uploadQueue = new Map();
-const DEBOUNCE_MS = config.debounceMs || 2000; // 默认 2 秒防抖
+const DEBOUNCE_MS = config.debounceMs || 2000;
 
 // 文件哈希缓存 - 避免重复上传
 const fileHashCache = new Map();
@@ -64,7 +76,7 @@ function shouldUpload(filePath) {
 
     const cachedHash = fileHashCache.get(filePath);
     if (cachedHash === currentHash) {
-        return false; // 内容未变化
+        return false;
     }
 
     fileHashCache.set(filePath, currentHash);
@@ -72,12 +84,42 @@ function shouldUpload(filePath) {
 }
 
 /**
- * 获取相对路径（用于 WebDAV 远程路径）
+ * 获取文件所属的监控目录配置
  */
-function getRelativePath(filePath) {
-    const baseDir = path.resolve(config.watchDir);
-    const relative = path.relative(baseDir, filePath);
-    return relative;
+function getWatchDirConfig(filePath) {
+    const absPath = path.resolve(filePath);
+    for (const watchDir of watchDirs) {
+        const absWatchDir = path.resolve(watchDir.localDir);
+        if (absPath.startsWith(absWatchDir)) {
+            return watchDir;
+        }
+    }
+    return null;
+}
+
+/**
+ * 获取相对路径（包含远程前缀）
+ */
+function getRelativePath(filePath, watchDirConfig) {
+    if (!watchDirConfig) {
+        watchDirConfig = getWatchDirConfig(filePath);
+    }
+    if (!watchDirConfig) return null;
+
+    const absWatchDir = path.resolve(watchDirConfig.localDir);
+    const relative = path.relative(absWatchDir, filePath);
+    return path.posix.join(watchDirConfig.remotePrefix, relative);
+}
+
+/**
+ * 获取本地相对路径（用于日志显示）
+ */
+function getLocalRelativePath(filePath) {
+    const watchDirConfig = getWatchDirConfig(filePath);
+    if (!watchDirConfig) return filePath;
+
+    const absWatchDir = path.resolve(watchDirConfig.localDir);
+    return path.relative(absWatchDir, filePath);
 }
 
 /**
@@ -122,7 +164,13 @@ async function uploadFile(filePath) {
             return;
         }
 
-        const relativePath = getRelativePath(filePath);
+        const watchDirConfig = getWatchDirConfig(filePath);
+        if (!watchDirConfig) {
+            console.log(`⏭️  文件不在监控目录内: ${filePath}`);
+            return;
+        }
+
+        const relativePath = getRelativePath(filePath, watchDirConfig);
         const remotePath = path.posix.join(config.webdav.remotePath || '/', relativePath);
 
         // 确保远程目录存在
@@ -148,6 +196,8 @@ async function deleteRemoteFile(filePath) {
 
     try {
         const relativePath = getRelativePath(filePath);
+        if (!relativePath) return;
+
         const remotePath = path.posix.join(config.webdav.remotePath || '/', relativePath);
 
         const exists = await webdavClient.exists(remotePath);
@@ -156,7 +206,6 @@ async function deleteRemoteFile(filePath) {
             console.log(`🗑️  已删除远程文件: ${remotePath}`);
         }
 
-        // 清除哈希缓存
         fileHashCache.delete(filePath);
     } catch (error) {
         console.error(`❌ 删除远程文件失败: ${filePath}`, error.message);
@@ -167,65 +216,16 @@ async function deleteRemoteFile(filePath) {
  * 防抖处理文件变化
  */
 function queueUpload(filePath) {
-    // 清除之前的定时器
     if (uploadQueue.has(filePath)) {
         clearTimeout(uploadQueue.get(filePath));
     }
 
-    // 设置新的定时器
     const timer = setTimeout(async () => {
         uploadQueue.delete(filePath);
         await uploadFile(filePath);
     }, DEBOUNCE_MS);
 
     uploadQueue.set(filePath, timer);
-}
-
-/**
- * 初始全量同步
- */
-async function initialSync() {
-    if (!config.initialSync) {
-        console.log('⏭️  跳过初始同步（配置中已禁用）');
-        return;
-    }
-
-    console.log('🔄 开始初始全量同步...');
-
-    const walkDir = (dir) => {
-        const files = [];
-        const items = fs.readdirSync(dir, { withFileTypes: true });
-
-        for (const item of items) {
-            const fullPath = path.join(dir, item.name);
-
-            // 检查是否应该忽略
-            const relativePath = getRelativePath(fullPath);
-            if (shouldIgnore(relativePath)) continue;
-
-            if (item.isDirectory()) {
-                files.push(...walkDir(fullPath));
-            } else if (item.isFile()) {
-                files.push(fullPath);
-            }
-        }
-
-        return files;
-    };
-
-    const files = walkDir(path.resolve(config.watchDir));
-    console.log(`📊 发现 ${files.length} 个文件需要检查`);
-
-    let synced = 0;
-    for (const file of files) {
-        await uploadFile(file);
-        synced++;
-        if (synced % 50 === 0) {
-            console.log(`📊 进度: ${synced}/${files.length}`);
-        }
-    }
-
-    console.log('✅ 初始同步完成');
 }
 
 /**
@@ -239,9 +239,13 @@ function shouldIgnore(relativePath) {
         return true;
     }
 
+    // 忽略 data/default-user
+    if (relativePath.startsWith('data/default-user')) {
+        return true;
+    }
+
     for (const pattern of ignorePatterns) {
         if (typeof pattern === 'string') {
-            // 简单字符串匹配
             if (relativePath.includes(pattern)) return true;
         } else if (pattern instanceof RegExp) {
             if (pattern.test(relativePath)) return true;
@@ -252,6 +256,69 @@ function shouldIgnore(relativePath) {
 }
 
 /**
+ * 初始全量同步
+ */
+async function initialSync() {
+    if (!config.initialSync) {
+        console.log('⏭️  跳过初始同步（配置中已禁用）');
+        return;
+    }
+
+    console.log('🔄 开始初始全量同步...');
+
+    const allFiles = [];
+
+    for (const watchDir of watchDirs) {
+        const absDir = path.resolve(watchDir.localDir);
+
+        if (!fs.existsSync(absDir)) {
+            console.log(`⚠️  目录不存在，跳过: ${absDir}`);
+            continue;
+        }
+
+        const walkDir = (dir) => {
+            const files = [];
+            try {
+                const items = fs.readdirSync(dir, { withFileTypes: true });
+
+                for (const item of items) {
+                    const fullPath = path.join(dir, item.name);
+                    const relativePath = getRelativePath(fullPath, watchDir);
+
+                    if (shouldIgnore(relativePath)) continue;
+
+                    if (item.isDirectory()) {
+                        files.push(...walkDir(fullPath));
+                    } else if (item.isFile()) {
+                        files.push(fullPath);
+                    }
+                }
+            } catch (error) {
+                console.error(`❌ 读取目录失败: ${dir}`, error.message);
+            }
+            return files;
+        };
+
+        const files = walkDir(absDir);
+        allFiles.push(...files);
+        console.log(`📁 ${watchDir.remotePrefix}: 发现 ${files.length} 个文件`);
+    }
+
+    console.log(`📊 共发现 ${allFiles.length} 个文件需要检查`);
+
+    let synced = 0;
+    for (const file of allFiles) {
+        await uploadFile(file);
+        synced++;
+        if (synced % 50 === 0) {
+            console.log(`📊 进度: ${synced}/${allFiles.length}`);
+        }
+    }
+
+    console.log('✅ 初始同步完成');
+}
+
+/**
  * 测试 WebDAV 连接
  */
 async function testConnection() {
@@ -259,7 +326,6 @@ async function testConnection() {
         console.log('🔗 测试 WebDAV 连接...');
         const exists = await webdavClient.exists(config.webdav.remotePath || '/');
         if (!exists) {
-            // 尝试创建根目录
             await webdavClient.createDirectory(config.webdav.remotePath || '/');
         }
         console.log('✅ WebDAV 连接成功');
@@ -287,8 +353,11 @@ function printStats() {
  */
 async function main() {
     console.log('🚀 SillyTavern 实时备份同步脚本');
-    console.log(`📁 监控目录: ${path.resolve(config.watchDir)}`);
     console.log(`🌐 WebDAV: ${config.webdav.url}${config.webdav.remotePath || '/'}`);
+    console.log('📁 监控目录:');
+    for (const watchDir of watchDirs) {
+        console.log(`   - ${path.resolve(watchDir.localDir)} → ${watchDir.remotePrefix}/`);
+    }
     console.log('');
 
     // 测试连接
@@ -300,9 +369,15 @@ async function main() {
     // 初始同步
     await initialSync();
 
-    // 设置文件监控
-    const watchPath = path.resolve(config.watchDir);
-    const watcher = chokidar.watch(watchPath, {
+    // 设置文件监控（监控所有目录）
+    const watchPaths = watchDirs.map(w => path.resolve(w.localDir)).filter(p => fs.existsSync(p));
+
+    if (watchPaths.length === 0) {
+        console.error('❌ 没有可监控的目录');
+        process.exit(1);
+    }
+
+    const watcher = chokidar.watch(watchPaths, {
         persistent: true,
         ignoreInitial: true,
         awaitWriteFinish: {
@@ -311,22 +386,21 @@ async function main() {
         },
         ignored: (filePath) => {
             const relativePath = getRelativePath(filePath);
-            return shouldIgnore(relativePath);
+            return relativePath ? shouldIgnore(relativePath) : false;
         },
     });
 
-    // 监听文件变化事件
     watcher
         .on('add', (filePath) => {
-            console.log(`📝 新文件: ${getRelativePath(filePath)}`);
+            console.log(`📝 新文件: ${getLocalRelativePath(filePath)}`);
             queueUpload(filePath);
         })
         .on('change', (filePath) => {
-            console.log(`📝 文件修改: ${getRelativePath(filePath)}`);
+            console.log(`📝 文件修改: ${getLocalRelativePath(filePath)}`);
             queueUpload(filePath);
         })
         .on('unlink', (filePath) => {
-            console.log(`🗑️  文件删除: ${getRelativePath(filePath)}`);
+            console.log(`🗑️  文件删除: ${getLocalRelativePath(filePath)}`);
             deleteRemoteFile(filePath);
         })
         .on('error', (error) => {
@@ -352,7 +426,6 @@ async function main() {
         process.exit(0);
     });
 
-    // 定期打印统计
     if (config.statsInterval) {
         setInterval(printStats, config.statsInterval * 1000);
     }

@@ -2,7 +2,7 @@
 /**
  * SillyTavern 数据恢复脚本
  * 从 WebDAV 下载备份数据到本地
- * 优化版：并发下载 + 跳过 default-user
+ * 支持恢复 data 和 config 目录
  */
 
 const { createClient } = require('webdav');
@@ -26,11 +26,17 @@ const webdavClient = createClient(config.webdav.url, {
     password: config.webdav.password,
 });
 
-const localDataDir = path.resolve(config.watchDir || '../data');
 const remoteBasePath = config.webdav.remotePath || '/';
 
+// 恢复目录配置
+// 远程目录前缀 -> 本地目录
+const restoreDirs = {
+    'data': path.resolve(config.watchDir || '../data'),
+    'config': path.resolve(config.watchConfigDir || '../config'),
+};
+
 // 并发控制
-const CONCURRENCY = config.restoreConcurrency || 50; // 默认 50 个并发
+const CONCURRENCY = config.restoreConcurrency || 50;
 
 // 统计
 const stats = {
@@ -55,7 +61,7 @@ function ensureLocalDir(filePath) {
  */
 function shouldIgnore(relativePath) {
     // 始终忽略 default-user 目录
-    if (relativePath.startsWith('default-user/') || relativePath === 'default-user') {
+    if (relativePath.includes('default-user')) {
         return true;
     }
 
@@ -67,6 +73,26 @@ function shouldIgnore(relativePath) {
     }
 
     return false;
+}
+
+/**
+ * 获取本地路径
+ */
+function getLocalPath(remotePath) {
+    // remotePath 格式: /SillyTavern-Backup/data/xxx 或 /SillyTavern-Backup/config/xxx
+    const relativePath = remotePath.replace(remoteBasePath, '').replace(/^\//, '');
+
+    // 找到对应的本地目录
+    for (const [prefix, localDir] of Object.entries(restoreDirs)) {
+        if (relativePath.startsWith(prefix + '/')) {
+            const subPath = relativePath.substring(prefix.length + 1);
+            return path.join(localDir, subPath);
+        } else if (relativePath === prefix) {
+            return localDir;
+        }
+    }
+
+    return null;
 }
 
 /**
@@ -85,14 +111,20 @@ async function collectFiles(remotePath, files = []) {
                 continue;
             }
 
+            // 检查是否是我们要恢复的目录
+            const localPath = getLocalPath(itemRemotePath);
+            if (!localPath && item.type !== 'directory') {
+                continue;
+            }
+
             if (item.type === 'directory') {
                 // 递归收集子目录
                 await collectFiles(itemRemotePath, files);
-            } else {
+            } else if (localPath) {
                 // 添加到文件列表
                 files.push({
                     remotePath: itemRemotePath,
-                    localPath: path.join(localDataDir, relativePath),
+                    localPath: localPath,
                     relativePath: relativePath,
                 });
             }
@@ -106,7 +138,7 @@ async function collectFiles(remotePath, files = []) {
 }
 
 /**
- * 下载单个文件（不检查时间戳，直接下载）
+ * 下载单个文件
  */
 async function downloadFile(fileInfo) {
     const { remotePath, localPath, relativePath } = fileInfo;
@@ -137,12 +169,10 @@ async function downloadFile(fileInfo) {
 async function downloadFilesInParallel(files) {
     const chunks = [];
 
-    // 将文件分成多个批次
     for (let i = 0; i < files.length; i += CONCURRENCY) {
         chunks.push(files.slice(i, i + CONCURRENCY));
     }
 
-    // 逐批并发下载
     for (const chunk of chunks) {
         await Promise.all(chunk.map(file => downloadFile(file)));
     }
@@ -175,7 +205,10 @@ async function main() {
 
     console.log('📥 SillyTavern 数据恢复脚本 (优化版)');
     console.log(`🌐 WebDAV: ${config.webdav.url}${remoteBasePath}`);
-    console.log(`📁 本地目录: ${localDataDir}`);
+    console.log('📁 恢复目录:');
+    for (const [prefix, localDir] of Object.entries(restoreDirs)) {
+        console.log(`   - ${prefix}/ → ${localDir}`);
+    }
     console.log(`⚡ 并发数: ${CONCURRENCY}`);
     console.log('');
 
@@ -185,9 +218,11 @@ async function main() {
         process.exit(0);
     }
 
-    // 确保本地数据目录存在
-    if (!fs.existsSync(localDataDir)) {
-        fs.mkdirSync(localDataDir, { recursive: true });
+    // 确保本地目录存在
+    for (const localDir of Object.values(restoreDirs)) {
+        if (!fs.existsSync(localDir)) {
+            fs.mkdirSync(localDir, { recursive: true });
+        }
     }
 
     console.log('🔍 扫描远程文件...');

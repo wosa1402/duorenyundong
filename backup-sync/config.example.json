@@ -6,11 +6,13 @@
         "remotePath": "/SillyTavern-Backup"
     },
     "watchDir": "../data",
+    "watchConfigDir": "../config",
     "debounceMs": 2000,
     "initialSync": true,
     "syncDelete": false,
     "verbose": false,
     "statsInterval": 300,
+    "restoreConcurrency": 50,
     "ignorePatterns": [
         "_cache",
         "_webpack",
