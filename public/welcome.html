@@ -231,6 +231,25 @@
     </div>
 
     <script src="scripts/public-pages-config.js"></script>
+    <script>
+        // 检测用户是否已登录，如果已登录则跳转到主应用
+        (async function() {
+            try {
+                const response = await fetch('/api/users/me', {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const user = await response.json();
+                    if (user && user.handle) {
+                        // 用户已登录，跳转到主应用
+                        window.location.replace('/app');
+                    }
+                }
+            } catch (e) {
+                // 忽略错误，保持在欢迎页面
+            }
+        })();
+    </script>
 </body>
 
 </html>
