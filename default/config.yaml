@@ -298,8 +298,6 @@ enableServerPlugins: false
 # Attempt to automatically update server plugins on startup
 enableServerPluginsAutoUpdate: true
 
-enableInvitationCodes: false
-
 # -- OAUTH LOGIN CONFIGURATION --
 # Enable third-party OAuth login providers
 oauth:

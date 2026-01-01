@@ -1,10 +1,9 @@
 import storage from 'node-persist';
 import crypto from 'node:crypto';
-import { getConfigValue } from './util.js';
+import { isInvitationCodesEnabled } from './dynamic-config.js';
 
 const INVITATION_PREFIX = 'invitation:';
 const PURCHASE_LINK_KEY = 'invitation:purchaseLink';
-const ENABLE_INVITATION_CODES = getConfigValue('enableInvitationCodes', false, 'boolean');
 
 /**
  * @typedef {Object} InvitationCode
@@ -61,7 +60,7 @@ function getDurationDays(durationType) {
  * @returns {Promise<InvitationCode>} 创建的邀请码对象
  */
 export async function createInvitationCode(createdBy, durationType = 'permanent') {
-    if (!ENABLE_INVITATION_CODES) {
+    if (!isInvitationCodesEnabled()) {
         throw new Error('邀请码功能未启用');
     }
 
@@ -93,7 +92,7 @@ export async function createInvitationCode(createdBy, durationType = 'permanent'
  * @returns {Promise<{valid: boolean, reason?: string, invitation?: InvitationCode}>} 验证结果
  */
 export async function validateInvitationCode(code) {
-    if (!ENABLE_INVITATION_CODES) {
+    if (!isInvitationCodesEnabled()) {
         return { valid: true }; // 如果功能未启用，则认为有效
     }
 
@@ -124,7 +123,7 @@ export async function validateInvitationCode(code) {
  * @returns {Promise<{success: boolean, invitation?: InvitationCode}>} 使用结果及邀请码信息
  */
 export async function useInvitationCode(code, usedBy, userExpiresAt = null) {
-    if (!ENABLE_INVITATION_CODES) {
+    if (!isInvitationCodesEnabled()) {
         return { success: true }; // 如果功能未启用，则认为成功
     }
 
@@ -153,7 +152,7 @@ export async function useInvitationCode(code, usedBy, userExpiresAt = null) {
  * @returns {Promise<InvitationCode[]>} 邀请码列表
  */
 export async function getAllInvitationCodes() {
-    if (!ENABLE_INVITATION_CODES) {
+    if (!isInvitationCodesEnabled()) {
         return [];
     }
 
@@ -182,7 +181,7 @@ export async function getAllInvitationCodes() {
  * @returns {Promise<boolean>} 是否成功删除
  */
 export async function deleteInvitationCode(code) {
-    if (!ENABLE_INVITATION_CODES) {
+    if (!isInvitationCodesEnabled()) {
         return false;
     }
 
@@ -199,20 +198,15 @@ export async function deleteInvitationCode(code) {
     return true;
 }
 
-/**
- * 检查是否启用邀请码功能
- * @returns {boolean} 是否启用
- */
-export function isInvitationCodesEnabled() {
-    return ENABLE_INVITATION_CODES;
-}
+// isInvitationCodesEnabled 已从 dynamic-config.js 导入并在此模块中使用
+// 不再需要本地定义
 
 /**
  * 清理已使用的邀请码（可选功能）
  * @returns {Promise<number>} 清理的数量
  */
 export async function cleanupExpiredInvitationCodes() {
-    if (!ENABLE_INVITATION_CODES) {
+    if (!isInvitationCodesEnabled()) {
         return 0;
     }
 

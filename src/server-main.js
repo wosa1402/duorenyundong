@@ -21,6 +21,7 @@ import { serverDirectory } from './server-directory.js';
 
 import { serverEvents, EVENT_NAMES } from './server-events.js';
 import { loadPlugins } from './plugin-loader.js';
+import { initDynamicConfig } from './dynamic-config.js';
 import {
     initUserStorage,
     getCookieSecret,
@@ -513,6 +514,7 @@ function setDnsResolutionOrder() {
 
 // User storage module needs to be initialized before starting the server
 initUserStorage(globalThis.DATA_ROOT)
+    .then(initDynamicConfig)
     .then(setDnsResolutionOrder)
     .then(ensurePublicDirectoriesExist)
     .then(migrateUserData)

@@ -21,6 +21,9 @@
         <button type="button" class="oauthConfigButton menu_button menu_button_icon" data-target-tab="oauthConfigBlock">
             <h4 data-i18n="OAuth Config">OAuth配置</h4>
         </button>
+        <button type="button" class="systemConfigButton menu_button menu_button_icon" data-target-tab="systemConfigBlock">
+            <h4 data-i18n="System Config">系统配置</h4>
+        </button>
     </nav>
 
     <div class="userAccountTemplate template_element">
@@ -855,6 +858,70 @@
                         <li>建议在生产环境使用 HTTPS 以确保安全性</li>
                     </ul>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 系统配置面板 -->
+    <div class="navTab systemConfigBlock" style="display: none;">
+        <div class="flex-container flexFlowColumn flexGap10 wide100p">
+            <h3 data-i18n="System Configuration">系统配置</h3>
+            <p style="color: var(--SmartThemeQuoteColor);">
+                这些配置会立即生效并自动保存，重启服务后仍然有效。
+            </p>
+
+            <div class="flex-container flexFlowColumn flexGap10" style="max-width: 600px;">
+                <!-- 邀请码开关 -->
+                <div class="flex-container alignItemsCenter justifySpaceBetween" style="padding: 10px; background: var(--SmartThemeBlurTintColor); border-radius: 5px;">
+                    <div class="flex-container flexFlowColumn">
+                        <strong>需要邀请码注册</strong>
+                        <small style="color: var(--SmartThemeQuoteColor);">开启后，新用户注册必须提供有效的邀请码</small>
+                    </div>
+                    <input type="checkbox" id="configEnableInvitationCodes" class="dynamicConfigToggle" data-config-key="enableInvitationCodes">
+                </div>
+
+                <!-- 隐私登录开关 -->
+                <div class="flex-container alignItemsCenter justifySpaceBetween" style="padding: 10px; background: var(--SmartThemeBlurTintColor); border-radius: 5px;">
+                    <div class="flex-container flexFlowColumn">
+                        <strong>隐私登录模式</strong>
+                        <small style="color: var(--SmartThemeQuoteColor);">隐藏登录页面的用户列表，用户需要手动输入用户名</small>
+                    </div>
+                    <input type="checkbox" id="configEnableDiscreetLogin" class="dynamicConfigToggle" data-config-key="enableDiscreetLogin">
+                </div>
+
+                <!-- 论坛开关 -->
+                <div class="flex-container alignItemsCenter justifySpaceBetween" style="padding: 10px; background: var(--SmartThemeBlurTintColor); border-radius: 5px;">
+                    <div class="flex-container flexFlowColumn">
+                        <strong>启用论坛功能</strong>
+                        <small style="color: var(--SmartThemeQuoteColor);">启用用户论坛和讨论功能</small>
+                    </div>
+                    <input type="checkbox" id="configEnableForum" class="dynamicConfigToggle" data-config-key="enableForum">
+                </div>
+
+                <!-- 角色卡分享开关 -->
+                <div class="flex-container alignItemsCenter justifySpaceBetween" style="padding: 10px; background: var(--SmartThemeBlurTintColor); border-radius: 5px;">
+                    <div class="flex-container flexFlowColumn">
+                        <strong>启用角色卡分享</strong>
+                        <small style="color: var(--SmartThemeQuoteColor);">允许用户分享和浏览公共角色卡</small>
+                    </div>
+                    <input type="checkbox" id="configEnablePublicCharacters" class="dynamicConfigToggle" data-config-key="enablePublicCharacters">
+                </div>
+            </div>
+
+            <div class="flex-container justifyCenter" style="margin-top: 20px;">
+                <button type="button" class="menu_button menu_button_icon" id="loadDynamicConfig">
+                    <i class="fa-fw fa-solid fa-sync"></i>
+                    <span>刷新配置</span>
+                </button>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: var(--SmartThemeBlurTintColor); border-radius: 5px;">
+                <h4>💡 提示：</h4>
+                <ul style="padding-left: 20px;">
+                    <li>这些配置修改后<strong>立即生效</strong>，无需重启服务</li>
+                    <li>配置会自动保存到数据目录，支持 WebDAV 同步</li>
+                    <li>重新部署时会自动恢复这些配置</li>
+                </ul>
             </div>
         </div>
     </div>

@@ -1477,6 +1477,9 @@ if (typeof window.initializeAdminExtensions === 'function') {
     // 绑定定时任务相关按钮
     initScheduledTasksHandlers(template);
 
+    // 绑定动态配置相关处理
+    initDynamicConfigHandlers(template);
+
     callGenericPopup(template, POPUP_TYPE.TEXT, '', { okButton: 'Close', wide: true, large: true, allowVerticalScrolling: true, allowHorizontalScrolling: true });
 
     renderUsers();
@@ -1686,6 +1689,83 @@ function initScheduledTasksHandlers(template) {
             }, 3000);
         }
     }
+}
+
+/**
+ * 初始化动态配置处理器
+ * @param {JQuery<HTMLElement>} template - 模板jQuery对象
+ */
+function initDynamicConfigHandlers(template) {
+    const loadButton = template.find('#loadDynamicConfig');
+    const toggles = template.find('.dynamicConfigToggle');
+
+    // 加载配置
+    async function loadDynamicConfig() {
+        try {
+            const response = await fetch('/api/dynamic-config', {
+                method: 'GET',
+                headers: getRequestHeaders(),
+            });
+
+            if (!response.ok) {
+                throw new Error('加载配置失败');
+            }
+
+            const config = await response.json();
+
+            // 更新UI
+            toggles.each(function() {
+                const key = $(this).data('config-key');
+                if (key && config.hasOwnProperty(key)) {
+                    $(this).prop('checked', config[key]);
+                }
+            });
+
+            console.log('Dynamic config loaded:', config);
+        } catch (error) {
+            console.error('Error loading dynamic config:', error);
+            toastr.error('加载配置失败: ' + error.message, '错误');
+        }
+    }
+
+    // 保存单个配置项
+    async function saveDynamicConfig(key, value) {
+        try {
+            const response = await fetch('/api/dynamic-config', {
+                method: 'POST',
+                headers: getRequestHeaders(),
+                body: JSON.stringify({ [key]: value }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || '保存配置失败');
+            }
+
+            toastr.success(`配置已更新`, '成功');
+            console.log(`Dynamic config updated: ${key} = ${value}`);
+        } catch (error) {
+            console.error('Error saving dynamic config:', error);
+            toastr.error('保存配置失败: ' + error.message, '错误');
+            // 恢复原值
+            loadDynamicConfig();
+        }
+    }
+
+    // 绑定切换事件
+    toggles.on('change', function() {
+        const key = $(this).data('config-key');
+        const value = $(this).is(':checked');
+        if (key) {
+            saveDynamicConfig(key, value);
+        }
+    });
+
+    // 绑定刷新按钮
+    loadButton.on('click', loadDynamicConfig);
+
+    // 初始加载配置
+    loadDynamicConfig();
 }
 
 /**
