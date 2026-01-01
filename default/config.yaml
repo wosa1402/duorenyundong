@@ -82,6 +82,8 @@ requestProxy:
 enableUserAccounts: true
 # Enable discreet login mode: hides user list on the login screen
 enableDiscreetLogin: true
+# Enable invitation codes for registration
+enableInvitationCodes: true
 # If `basicAuthMode` and this are enabled then
 # the username and passwords for basic auth are the same as those
 # for the individual accounts
