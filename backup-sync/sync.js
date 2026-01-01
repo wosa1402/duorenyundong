@@ -234,6 +234,11 @@ async function initialSync() {
 function shouldIgnore(relativePath) {
     const ignorePatterns = config.ignorePatterns || [];
 
+    // 始终忽略 default-user 目录
+    if (relativePath.startsWith('default-user/') || relativePath === 'default-user') {
+        return true;
+    }
+
     for (const pattern of ignorePatterns) {
         if (typeof pattern === 'string') {
             // 简单字符串匹配

@@ -2,6 +2,7 @@
 /**
  * SillyTavern 数据恢复脚本
  * 从 WebDAV 下载备份数据到本地
+ * 优化版：并发下载 + 跳过 default-user
  */
 
 const { createClient } = require('webdav');
@@ -28,11 +29,15 @@ const webdavClient = createClient(config.webdav.url, {
 const localDataDir = path.resolve(config.watchDir || '../data');
 const remoteBasePath = config.webdav.remotePath || '/';
 
+// 并发控制
+const CONCURRENCY = config.restoreConcurrency || 10; // 默认 10 个并发
+
 // 统计
 const stats = {
     downloaded: 0,
     skipped: 0,
     errors: 0,
+    total: 0,
 };
 
 /**
@@ -46,57 +51,67 @@ function ensureLocalDir(filePath) {
 }
 
 /**
- * 递归下载目录
+ * 检查是否应该忽略
  */
-async function downloadDirectory(remotePath, localPath) {
+function shouldIgnore(relativePath) {
+    // 始终忽略 default-user 目录
+    if (relativePath.startsWith('default-user/') || relativePath === 'default-user') {
+        return true;
+    }
+
+    const ignorePatterns = config.ignorePatterns || [];
+    for (const pattern of ignorePatterns) {
+        if (relativePath.includes(pattern)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * 收集所有需要下载的文件
+ */
+async function collectFiles(remotePath, files = []) {
     try {
         const items = await webdavClient.getDirectoryContents(remotePath);
 
         for (const item of items) {
             const itemRemotePath = item.filename;
             const relativePath = itemRemotePath.replace(remoteBasePath, '').replace(/^\//, '');
-            const itemLocalPath = path.join(localPath, relativePath);
 
             // 检查是否应该忽略
             if (shouldIgnore(relativePath)) {
-                console.log(`⏭️  忽略: ${relativePath}`);
                 continue;
             }
 
             if (item.type === 'directory') {
-                // 递归下载子目录
-                await downloadDirectory(itemRemotePath, localPath);
+                // 递归收集子目录
+                await collectFiles(itemRemotePath, files);
             } else {
-                // 下载文件
-                await downloadFile(itemRemotePath, itemLocalPath);
+                // 添加到文件列表
+                files.push({
+                    remotePath: itemRemotePath,
+                    localPath: path.join(localDataDir, relativePath),
+                    relativePath: relativePath,
+                });
             }
         }
     } catch (error) {
         console.error(`❌ 读取目录失败: ${remotePath}`, error.message);
         stats.errors++;
     }
+
+    return files;
 }
 
 /**
- * 下载单个文件
+ * 下载单个文件（不检查时间戳，直接下载）
  */
-async function downloadFile(remotePath, localPath) {
+async function downloadFile(fileInfo) {
+    const { remotePath, localPath, relativePath } = fileInfo;
+
     try {
-        // 检查本地文件是否已存在且相同
-        if (fs.existsSync(localPath)) {
-            const localStat = fs.statSync(localPath);
-            const remoteInfo = await webdavClient.stat(remotePath);
-
-            // 如果本地文件更新，跳过
-            if (localStat.mtime >= new Date(remoteInfo.lastmod)) {
-                stats.skipped++;
-                if (config.verbose) {
-                    console.log(`⏭️  本地较新，跳过: ${path.basename(localPath)}`);
-                }
-                return;
-            }
-        }
-
         // 确保目录存在
         ensureLocalDir(localPath);
 
@@ -105,26 +120,32 @@ async function downloadFile(remotePath, localPath) {
         fs.writeFileSync(localPath, Buffer.from(content));
 
         stats.downloaded++;
-        console.log(`✅ 已下载: ${remotePath.replace(remoteBasePath, '')}`);
+
+        // 每下载 20 个文件打印一次进度
+        if (stats.downloaded % 20 === 0) {
+            console.log(`📊 进度: ${stats.downloaded}/${stats.total}`);
+        }
     } catch (error) {
-        console.error(`❌ 下载失败: ${remotePath}`, error.message);
+        console.error(`❌ 下载失败: ${relativePath}`, error.message);
         stats.errors++;
     }
 }
 
 /**
- * 检查是否应该忽略
+ * 并发下载文件
  */
-function shouldIgnore(relativePath) {
-    const ignorePatterns = config.ignorePatterns || [];
+async function downloadFilesInParallel(files) {
+    const chunks = [];
 
-    for (const pattern of ignorePatterns) {
-        if (relativePath.includes(pattern)) {
-            return true;
-        }
+    // 将文件分成多个批次
+    for (let i = 0; i < files.length; i += CONCURRENCY) {
+        chunks.push(files.slice(i, i + CONCURRENCY));
     }
 
-    return false;
+    // 逐批并发下载
+    for (const chunk of chunks) {
+        await Promise.all(chunk.map(file => downloadFile(file)));
+    }
 }
 
 /**
@@ -150,15 +171,18 @@ async function testConnection() {
  * 主函数
  */
 async function main() {
-    console.log('📥 SillyTavern 数据恢复脚本');
+    const startTime = Date.now();
+
+    console.log('📥 SillyTavern 数据恢复脚本 (优化版)');
     console.log(`🌐 WebDAV: ${config.webdav.url}${remoteBasePath}`);
     console.log(`📁 本地目录: ${localDataDir}`);
+    console.log(`⚡ 并发数: ${CONCURRENCY}`);
     console.log('');
 
     // 测试连接
     const connected = await testConnection();
     if (!connected) {
-        process.exit(0); // 远程目录不存在时正常退出
+        process.exit(0);
     }
 
     // 确保本地数据目录存在
@@ -166,18 +190,29 @@ async function main() {
         fs.mkdirSync(localDataDir, { recursive: true });
     }
 
-    console.log('🔄 开始恢复数据...');
+    console.log('🔍 扫描远程文件...');
+    const files = await collectFiles(remoteBasePath);
+    stats.total = files.length;
+
+    if (files.length === 0) {
+        console.log('⚠️  没有找到需要恢复的文件');
+        process.exit(0);
+    }
+
+    console.log(`📊 发现 ${files.length} 个文件需要下载`);
+    console.log('🔄 开始并发下载...');
     console.log('');
 
-    // 开始下载
-    await downloadDirectory(remoteBasePath, localDataDir);
+    // 并发下载
+    await downloadFilesInParallel(files);
 
     // 打印统计
+    const duration = ((Date.now() - startTime) / 1000).toFixed(1);
     console.log('');
     console.log('📊 恢复完成:');
     console.log(`   已下载: ${stats.downloaded} 个文件`);
-    console.log(`   已跳过: ${stats.skipped} 个文件`);
     console.log(`   错误数: ${stats.errors}`);
+    console.log(`   耗时: ${duration} 秒`);
 }
 
 main().catch((error) => {

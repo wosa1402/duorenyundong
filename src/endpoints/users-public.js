@@ -541,13 +541,16 @@ router.post('/register', async (request, response) => {
         }
         // 如果邀请码功能关闭，则 userExpiresAt 保持为 null（永久账户）
 
+        // 检查是否是第一个注册的用户（自动成为管理员）
+        const isFirstUser = handles.length === 0;
+
         const newUser = {
             handle: normalizedHandle,
             name: name.trim(),
             created: Date.now(),
             password: hashedPassword,
             salt: salt,
-            admin: false,
+            admin: isFirstUser, // 第一个注册的用户自动成为管理员
             enabled: true,
             expiresAt: userExpiresAt,
         };
