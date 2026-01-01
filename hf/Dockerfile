@@ -2,7 +2,7 @@ FROM node:lts-alpine3.22
 
 # Arguments
 ARG APP_HOME=/home/node/app
-ARG REPO_URL=https://github.com/wosa1402/SillyTarvernchat-docker.git
+ARG REPO_URL=https://github.com/wosa1402/duorenyundong.git
 
 # Install system dependencies
 RUN apk add --no-cache gcompat tini git git-lfs dos2unix

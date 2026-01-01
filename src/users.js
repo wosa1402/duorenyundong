@@ -568,12 +568,11 @@ export async function initUserStorage(dataRoot) {
         expiredInterval: 0,
     });
 
-    const keys = await getAllUserHandles();
-
-    // If there are no users, create the default user
-    if (keys.length === 0) {
-        await storage.setItem(toKey(DEFAULT_USER.handle), DEFAULT_USER);
-    }
+    // 不再自动创建 default-user，让第一个注册的用户成为管理员
+    // const keys = await getAllUserHandles();
+    // if (keys.length === 0) {
+    //     await storage.setItem(toKey(DEFAULT_USER.handle), DEFAULT_USER);
+    // }
 }
 
 /**
